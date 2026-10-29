@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crab Rescue</title>
+<style>
+:root{--bg:#10120f;--panel:#181b17;--ink:#ece8df;--mute:#a6a396;--line:#2c3029;--fire:#ee4e18;--ok:#58c17a;--bad:#e5645a;--vlm:#6aa9ff;--llm:#e0b44a;--r:12px}
+@media (prefers-color-scheme:light){:root{--bg:#f6f3ec;--panel:#fffdf8;--ink:#1d1f1a;--mute:#6b685d;--line:#ddd8ca}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:1040px;margin:0 auto;padding:0 16px 80px}
+section{padding:44px 0 8px}
+h1{font-size:clamp(30px,6vw,52px);line-height:1.08;margin:0 0 14px;letter-spacing:-.02em}
+h2{font-size:24px;margin:0 0 6px}
+p.lead{font-size:clamp(17px,2.4vw,21px);color:var(--mute);max-width:46em;margin:0 0 20px}
+.sub{color:var(--mute);margin:0 0 18px;max-width:50em}
+.fire{color:var(--fire)}
+.banner{background:rgba(238,78,24,.12);border:1px solid var(--fire);border-radius:var(--r);padding:12px 14px;margin:22px 0;font-size:15px}
+video{width:100%;border-radius:var(--r);background:#000;display:block}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:720px){.grid2{grid-template-columns:1fr}}
+figure{margin:0}figcaption{font-size:14px;color:var(--mute);margin-top:6px}
+.btn{background:var(--fire);color:#fff;border:0;border-radius:999px;padding:9px 18px;font:600 15px inherit;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:15px;background:var(--panel);border-radius:var(--r);overflow:hidden}
+th,td{padding:9px 12px;text-align:left;border-bottom:1px solid var(--line)}
+th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--mute)}
+td.n{font-variant-numeric:tabular-nums}
+.scroll{overflow-x:auto}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.chip{font-size:12px;padding:2px 8px;border-radius:999px;border:1px solid var(--line)}
+.chip.ok{border-color:var(--ok);color:var(--ok)}.chip.bad{border-color:var(--bad);color:var(--bad)}
+.tl{position:relative;border-left:2px solid var(--line);margin-left:8px;padding-left:18px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin:0 0 12px;position:relative}
+.card::before{content:"";position:absolute;left:-26px;top:18px;width:12px;height:12px;border-radius:50%;background:var(--line)}
+.card.perception::before{background:var(--vlm)}.card.plan::before{background:var(--llm)}.card.event::before{background:var(--fire)}
+.card.rej{opacity:.78}
+.hd{display:flex;gap:8px;align-items:baseline;flex-wrap:wrap;font-size:14px}
+.t{font-variant-numeric:tabular-nums;font-weight:700}
+.tag{font-size:12px;padding:1px 8px;border-radius:999px;background:var(--line)}
+.row{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
+.row img{width:min(240px,100%);border-radius:8px;image-rendering:pixelated;border:1px solid var(--line)}
+details{margin-top:8px}summary{cursor:pointer;color:var(--mute);font-size:14px}
+pre{background:rgba(127,127,127,.12);padding:10px;border-radius:8px;overflow:auto;font-size:12.5px;max-height:260px}
+.legend{display:flex;gap:16px;font-size:13px;color:var(--mute);margin:0 0 14px;flex-wrap:wrap}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
+ul.lim li{margin:6px 0}
+svg text{fill:var(--ink);font:13px ui-sans-serif,system-ui,sans-serif}
+a{color:var(--fire)}
+footer{color:var(--mute);font-size:14px;margin-top:40px}
+</style>
+</head>
+<body>
+<main>
+<section id="hero">
+  <h1>A room is on <span class="fire">fire</span>.<br>A figurine is inside.<br>A crab robot has to bring it out.</h1>
+  <p class="lead">No human in the loop. A vision-language model looks at camera frames, a language model plans waypoints as strict JSON, a safety validator checks every plan against walls and fire, and a walking policy's velocity commands carry it out - replanning as the fire spreads.</p>
+  <div id="fakebanner"></div>
+  <figure><video id="heroVideo" controls muted playsinline preload="metadata"></video><figcaption id="heroCap"></figcaption></figure>
+</section>
+
+<section id="compare">
+  <h2>Blind baseline vs agent</h2>
+  <p class="sub">Same room, same fire, same seed. The blind baseline knows where the figurine and exit are but cannot see walls or fire. The agent only sees camera frames.</p>
+  <div class="grid2">
+    <figure><video id="vBlind" controls muted playsinline preload="metadata"></video><figcaption id="cBlind"></figcaption></figure>
+    <figure><video id="vAgent" controls muted playsinline preload="metadata"></video><figcaption id="cAgent"></figcaption></figure>
+  </div>
+  <p style="margin-top:12px"><button class="btn" id="playBoth">Play both</button></p>
+</section>
+
+<section id="timeline">
+  <h2>One run, step by step</h2>
+  <p class="sub" id="tlSub"></p>
+  <div class="legend"><span><i class="dot" style="background:var(--vlm)"></i>VLM looks</span><span><i class="dot" style="background:var(--llm)"></i>LLM plans</span><span><i class="dot" style="background:var(--fire)"></i>event</span></div>
+  <div class="tl" id="tl"></div>
+</section>
+
+<section id="metrics">
+  <h2>Results over seeds</h2>
+  <p class="sub" id="mSub"></p>
+  <div class="scroll"><table id="mTable"></table></div>
+  <div class="chips" id="chips"></div>
+</section>
+
+<section id="bench">
+  <h2>Which vision model sees the fire best?</h2>
+  <div id="benchBody"></div>
+</section>
+
+<section id="how">
+  <h2>How it works</h2>
+  <svg viewBox="0 0 960 190" width="100%" role="img" aria-label="Pipeline: camera, VLM, planner, validator, policy, monitor">
+    <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 z" fill="#8a877b"/></marker></defs>
+    <g stroke="#8a877b" stroke-width="1.5" fill="none" marker-end="url(#ar)">
+      <path d="M150 60 H190"/><path d="M340 60 H380"/><path d="M530 60 H570"/><path d="M720 60 H760"/>
+      <path d="M835 92 V150 H110 V98" stroke-dasharray="5 4"/>
+      <path d="M635 98 V128 H455 V98" stroke-dasharray="5 4"/>
+    </g>
+    <g stroke-width="1.5">
+      <rect x="20" y="28" width="130" height="64" rx="10" fill="none" stroke="#8a877b"/>
+      <rect x="190" y="28" width="150" height="64" rx="10" fill="none" stroke="#6aa9ff"/>
+      <rect x="380" y="28" width="150" height="64" rx="10" fill="none" stroke="#e0b44a"/>
+      <rect x="570" y="28" width="150" height="64" rx="10" fill="none" stroke="#58c17a"/>
+      <rect x="760" y="28" width="150" height="64" rx="10" fill="none" stroke="#ee4e18"/>
+    </g>
+    <text x="85" y="56" text-anchor="middle">Camera frames</text><text x="85" y="74" text-anchor="middle" font-size="11">top-down, low rate</text>
+    <text x="265" y="56" text-anchor="middle">VLM perception</text><text x="265" y="74" text-anchor="middle" font-size="11">fire, figurine, exit, walls</text>
+    <text x="455" y="56" text-anchor="middle">LLM planner</text><text x="455" y="74" text-anchor="middle" font-size="11">JSON waypoints + rationale</text>
+    <text x="645" y="56" text-anchor="middle">Safety validator</text><text x="645" y="74" text-anchor="middle" font-size="11">grid check, repair, escalate</text>
+    <text x="835" y="56" text-anchor="middle">Locomotion</text><text x="835" y="74" text-anchor="middle" font-size="11">vx, vy, yaw commands</text>
+    <text x="480" y="170" text-anchor="middle" font-size="12">monitor: fire spreads or path blocked -> look again -> replan</text>
+    <text x="545" y="124" text-anchor="middle" font-size="11">rejected plan + reason goes back</text>
+  </svg>
+  <p class="sub">The language model never writes code. It returns JSON that must pass a strict schema (waypoints inside the room, speed limits, allowed action names only). An invalid or unsafe plan gets a repair retry with the reason, then a stronger model, then the last valid plan is kept. Success is decided by the simulator's ground truth, never by what a model says.</p>
+</section>
+
+<section id="limits">
+  <h2>Limitations, stated plainly</h2>
+  <ul class="lim">
+    <li><b>The fire is a simulated hazard region</b> (a spreading grid of cells), not fire physics. There is no heat, smoke dynamics or combustion.</li>
+    <li><b>"Carry" is a simplification.</b> The crab has claws, but this project does not simulate grasping: the figurine is welded in front of the crab when it gets within 0.4 m.</li>
+    <li><b>The walking is a kinematic stand-in in this build.</b> The robot takes the same velocity commands as the trained locomotion policy (forward, lateral, yaw), but this version integrates them directly with wall collisions. There is no balance model, so "falls" are not measured here.</li>
+    <li><b>Simulation only.</b> Nothing here ran on hardware. The simulation pauses while a model call is in flight, so model latency does not cost simulated time.</li>
+    <li><b>Perception uses a clean top-down render</b> of a small grid room, not a camera on the robot, and the baselines (blind, oracle) read ground truth by design.</li>
+  </ul>
+</section>
+
+<section id="downloads">
+  <h2>Downloads</h2>
+  <p><a href="downloads/plans.json">plans.json</a> (every plan the agent proposed in the featured run, including rejected ones) &middot; <a href="downloads/report.md">report.md</a> &middot; <a href="downloads/summary.json">summary.json</a></p>
+</section>
+<footer>Static page: no keys, no network calls at view time. Built from one run directory by <code>crab_rescue.build_site</code>.</footer>
+</main>
+
+<script id="data" type="application/json">__DATA__</script>
+<script>
+(function(){
+const D = JSON.parse(document.getElementById('data').textContent);
+const H = D.hero, S = D.summary;
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = (v,d=1) => v===null||v===undefined ? '-' : (typeof v==='number' ? (Number.isInteger(v)?v:v.toFixed(d)) : v);
+
+if (S.fake_models) $('fakebanner').innerHTML = '<div class="banner"><b>This build uses deterministic stand-in models, not Nebius models.</b> The pipeline, validator, simulator and metrics are real; the "VLM" decodes the rendered image by colour and the "planner" is A* on what the stand-in VLM reported. Real-model numbers replace these once the real runs are done.</div>';
+
+function setVideo(id, capId, src, cap){ const v=$(id); if(src){ v.src=src; } else { v.outerHTML='<p class="sub">No video for this run.</p>'; } $(capId).textContent=cap; }
+const ag = H.outcome;
+setVideo('heroVideo','heroCap',H.videos.agent, ag ? `Agent, seed ${H.seed}: ${ag.outcome.replace(/_/g,' ')} in ${fmt(ag.time_to_rescue_s)} s` : `Agent, seed ${H.seed}`);
+const ep = m => D.episodes.find(e=>e.seed===H.seed && e.method===m);
+const cap = (m,l)=>{const e=ep(m); return e? `${l}: ${e.outcome.replace(/_/g,' ')}, ${fmt(e.fire_exposure_s)} s in fire, ${e.collisions} collisions` : l;};
+setVideo('vBlind','cBlind',H.videos.blind, cap('blind','Blind baseline'));
+setVideo('vAgent','cAgent',H.videos.agent, cap('agent','Agent'));
+$('playBoth').onclick = () => { ['vBlind','vAgent'].forEach(i=>{const v=$(i); if(v&&v.play){v.currentTime=0;v.play();}}); };
+
+// timeline
+$('tlSub').textContent = `Seed ${H.seed}. Each card shows what a model saw or decided, when (simulated seconds), and which model role made the call.`;
+const tl = $('tl');
+H.timeline.forEach(it=>{
+  const c = document.createElement('div');
+  let inner='';
+  if(it.kind==='perception'){
+    c.className='card perception';
+    const p = it.json && typeof it.json==='object' ? it.json : null;
+    const sum = p ? `figurine ${p.figurine?'seen':'not seen'}, exit ${p.exit?'seen':'not seen'}, ${p.fire.length} fire region(s), confidence ${fmt(p.confidence,2)}` : esc(it.error||'invalid reply');
+    inner = `<div class="hd"><span class="t">${fmt(it.t)} s</span><span class="tag">VLM</span><b>${esc(it.role)}</b><span style="color:var(--mute)">${esc(it.model)}</span></div><div class="row">${it.frame?`<img src="assets/frames/${it.frame}" alt="frame the VLM saw at ${fmt(it.t)} s">`:''}<div style="flex:1;min-width:200px">${sum}<details><summary>JSON report</summary><pre>${esc(JSON.stringify(it.json,null,1))}</pre></details></div></div>`;
+  } else if(it.kind==='plan'){
+    c.className='card plan'+(it.accepted?'':' rej');
+    const p = it.json && it.json.waypoints ? it.json : null;
+    inner = `<div class="hd"><span class="t">${fmt(it.t)} s</span><span class="tag">LLM</span><b>${esc(it.role)}</b><span style="color:var(--mute)">${esc(it.model)} - ${esc(it.reason)}</span><span class="chip ${it.accepted?'ok':'bad'}">${it.accepted?'accepted':'rejected by '+esc(it.rejected_by)}</span></div>`
+      + (p?`<div style="margin-top:6px">${esc(p.rationale)} <span style="color:var(--mute)">(${p.waypoints.length} waypoints)</span></div>`:'')
+      + (it.reasons?`<div style="margin-top:6px;color:var(--bad)">${it.reasons.map(esc).join('<br>')}</div>`:'')
+      + `<details><summary>JSON</summary><pre>${esc(typeof it.json==='string'?it.json:JSON.stringify(it.json,null,1))}</pre></details>`;
+  } else {
+    c.className='card event';
+    const d = it.detail; const label = {fire_spread:'Fire spread detected',path_blocked:'Fire blocks the current path',pickup:(d.ok===false?'Pickup missed - figurine out of reach':'Pickup (weld on contact)'),release:'Released at the exit',plan_blocked:'Planning blocked by a cap',vlm_blocked:'Vision blocked by a cap',plan_failed:'No valid plan - keeping the last one',stuck:'Robot stuck',episode_end:'Episode ended'}[it.type]||it.type;
+    inner = `<div class="hd"><span class="t">${fmt(it.t)} s</span><span class="tag">event</span><b>${esc(label)}</b></div>`;
+  }
+  c.innerHTML = inner; tl.appendChild(c);
+});
+
+// metrics
+const M = S.methods; const names={agent:'Agent (VLM + planner)',blind:'Blind baseline',oracle:'Oracle (true map)'};
+$('mSub').textContent = `${S.seeds} different rooms, fire origins and figurine positions. Rescued means the simulator confirms the figurine reached the exit.`;
+let t = '<tr><th>Method</th><th>Rescued</th><th>Mean time (s)</th><th>Fire exposure (s)</th><th>Fire entries</th><th>Collisions</th></tr>';
+['blind','agent','oracle'].forEach(m=>{const a=M[m]; if(!a||!a.n) return; t+=`<tr><td>${names[m]}</td><td class="n">${a.rescued}/${a.n} (${Math.round(a.rescue_rate*100)}%)</td><td class="n">${fmt(a.time_to_rescue_s)}</td><td class="n">${fmt(a.fire_exposure_s)}</td><td class="n">${fmt(a.fire_entries)}</td><td class="n">${fmt(a.collisions)}</td></tr>`;});
+$('mTable').innerHTML=t;
+if(M.agent && M.agent.n){ $('mSub').textContent += ` Agent per episode: ${fmt(M.agent.vlm_calls)} VLM calls, ${fmt(M.agent.replans)} replans, ${fmt(M.agent.invalid_plans)} rejected plans, mean fire-map IoU ${fmt(M.agent.fire_iou,2)}.`; }
+const chips=$('chips'); const seeds=[...new Set(D.episodes.map(e=>e.seed))];
+seeds.forEach(s=>{const e=D.episodes.find(x=>x.seed===s&&x.method==='agent'); if(!e) return; const sp=document.createElement('span'); sp.className='chip '+(e.rescued?'ok':'bad'); sp.textContent=`seed ${s}: ${e.rescued?'rescued':e.outcome.replace(/_/g,' ')}`; chips.appendChild(sp);});
+
+// benchmark
+const b = D.bench;
+if(!b){ $('benchBody').innerHTML='<p class="sub">Not run yet. The benchmark sends the same labelled frames through each candidate vision model and reports localisation accuracy, latency and cost per call.</p>'; }
+else {
+  let bt='<tr><th>Model</th><th>Fire IoU</th><th>Figurine error (m)</th><th>Exit error (m)</th><th>Latency (s)</th><th>Cost / call</th></tr>';
+  b.models.forEach(m=>{bt+=`<tr><td>${esc(m.name)}</td><td class="n">${fmt(m.fire_iou,2)}</td><td class="n">${fmt(m.figurine_err_m,2)}</td><td class="n">${fmt(m.exit_err_m,2)}</td><td class="n">${fmt(m.latency_s,2)}</td><td class="n">${m.cost_per_call===null?'-':'$'+m.cost_per_call.toFixed(5)}</td></tr>`;});
+  $('benchBody').innerHTML=`<p class="sub">${esc(b.note||'')}</p><div class="scroll"><table>${bt}</table></div>`;
+}
+})();
+</script>
+</body>
+</html>
