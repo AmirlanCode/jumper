@@ -20,10 +20,29 @@ Everything lives in `crab_rescue/`; nothing upstream is modified.
 | Strict JSON schemas, grid safety validator, repair -> escalate -> last-valid-plan | done, tested |
 | Budget caps + `ledger.jsonl`, model routing, `--dry-run` | done, tested |
 | Static showcase site | done (`build_site`) |
-| Real Nebius VLM/planner clients | **not yet** (M2): needs model ids from `/v1/models` and prices from the console |
+| Real OpenAI-compatible VLM/planner clients, `discover` probe script | built, tested against a local mock server; **not yet run against Nebius** (needs network from a machine that reaches it) |
+| Real model ids and prices in `config.yaml` | **empty on purpose**: ids come from `/v1/models`, prices from the console |
 | MuJoCo + ONNX locomotion executor | **not yet** (M2): the executor here is a kinematic stand-in |
 
-## Reproduce
+## Running against the real models (from a machine that can reach Nebius)
+
+```bash
+pip install pydantic numpy pillow pyyaml
+read -s NEBIUS_API_KEY && export NEBIUS_API_KEY        # typed, not echoed, not in shell history
+export NEBIUS_BASE_URL=https://api.tokenfactory.us-central1.nebius.com/v1/
+python -m crab_rescue.discover                         # dry run: shows what it would do
+python -m crab_rescue.discover --yes                   # GET /models: the only source of model ids
+# put the ids you choose in config.yaml (models.<role>.id) and prices from the console
+python -m crab_rescue.discover --yes --probe vlm_primary=<id> vlm_cheap=<id> planner=<id> \
+    planner_fast=<id> planner_escalation=<id>          # tiny text + image test per role, < $0.01
+python -m crab_rescue.run --seeds 1 --methods agent,blind,oracle    # first run is a dry run
+python -m crab_rescue.run --seeds 1 --methods agent,blind,oracle    # then the real smoke episode
+```
+
+`discover` never prints or saves the key; `config.yaml` is refused until every role has an id
+and a price; on any cap the run stops new calls and keeps the last valid plan.
+
+## Reproduce (fakes, $0)
 
 ```bash
 pip install pydantic numpy pillow pyyaml pytest      # nothing GPU related

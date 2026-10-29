@@ -76,23 +76,34 @@ class Plan(BaseModel):
 
 
 def extract_json(text: str) -> str:
-    """Pull the first JSON object out of a model reply (fences and chatter tolerated)."""
+    """Pull a JSON object out of a model reply: the last fenced block, else the last object.
+
+    Reasoning models may think aloud before the answer, so the LAST parseable object wins.
+    """
     text = text.strip()
-    fence = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
-    if fence:
-        return fence.group(1)
-    start = text.find("{")
-    if start < 0:
+    fences = re.findall(r"```(?:json)?\s*(\{.*?\})\s*```", text, re.DOTALL)
+    for cand in reversed(fences):
+        try:
+            json.loads(cand)
+            return cand
+        except ValueError:
+            continue
+    dec = json.JSONDecoder()
+    found = None
+    i = text.find("{")
+    while i >= 0:
+        try:
+            obj, end = dec.raw_decode(text[i:])
+            if isinstance(obj, dict):
+                found = text[i:i + end]
+                i = text.find("{", i + end)
+                continue
+        except ValueError:
+            pass
+        i = text.find("{", i + 1)
+    if found is None:
         raise ValueError("no JSON object in reply")
-    depth = 0
-    for i in range(start, len(text)):
-        if text[i] == "{":
-            depth += 1
-        elif text[i] == "}":
-            depth -= 1
-            if depth == 0:
-                return text[start:i + 1]
-    raise ValueError("unterminated JSON object in reply")
+    return found
 
 
 def parse_perception(text: str) -> Perception:

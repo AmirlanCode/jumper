@@ -25,6 +25,10 @@ from .validator import build_map, rasterize  # noqa: F401  (rasterize re-exporte
 from .schemas import Box, Perception, Point
 
 
+class ModelCallError(RuntimeError):
+    """A model call failed (HTTP or transport). The agent keeps running on its last valid plan."""
+
+
 @dataclass
 class CallResult:
     text: str

@@ -18,7 +18,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from .budget import Budget, BudgetExceeded, PriceUnknown
-from .clients import PlannerClient, VLMClient
+from .clients import ModelCallError, PlannerClient, VLMClient
 from .follower import WaypointFollower
 from .router import Router
 from .schemas import Perception, Plan, parse_perception, parse_plan
@@ -61,7 +61,11 @@ def run_agent(sensor, vlm: VLMClient, planner: PlannerClient, budget: Budget, ro
                 return
             png, fid = sensor.frame()
             t0 = time.time()
-            res = vlm.perceive(role, png, {"t": t, "repair": repair, "grid": (gw, gh)})
+            try:
+                res = vlm.perceive(role, png, {"t": t, "repair": repair, "grid": (gw, gh)})
+            except ModelCallError as e:
+                event("vlm_error", role=role, error=str(e)[:200])
+                return
             budget.record("vlm", role, res.model, res.tokens_in, res.tokens_out,
                           res.latency_s or (time.time() - t0), t_sim=round(t, 2), attempt=attempt)
             fname = None
@@ -134,7 +138,11 @@ def run_agent(sensor, vlm: VLMClient, planner: PlannerClient, budget: Budget, ro
                     event("plan_blocked", reason=str(e), kept_last_valid=last_valid is not None)
                     return None
                 t0 = time.time()
-                res = planner.plan(role, ctx, feedback)
+                try:
+                    res = planner.plan(role, ctx, feedback)
+                except ModelCallError as e:
+                    event("plan_error", role=role, error=str(e)[:200])
+                    return None
                 budget.record(kind, role, res.model, res.tokens_in, res.tokens_out,
                               res.latency_s or (time.time() - t0), t_sim=round(t, 2), reason=reason)
                 entry = {"t": round(t, 2), "reason": reason, "role": role, "model": res.model,

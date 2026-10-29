@@ -20,10 +20,11 @@ import numpy as np
 from .agent import run_agent
 from .baselines import run_blind, run_oracle
 from .budget import Budget
-from .clients import FakePlanner, FakeVLM
-from .config import load_config
+from .clients import DiskCache, FakePlanner, FakeVLM
+from .config import ROLES, load_config
 from .evaluator import episode_metrics
 from .executor import SensorView, World
+from .nebius import ChatTransport, NebiusPlanner, NebiusVLM, env_credentials
 from .render import VideoWriter, render_world
 from .router import Router
 from .scene import generate_room
@@ -57,7 +58,7 @@ def dry_run_report(cfg: dict[str, Any], seeds: int, methods: tuple[str, ...]) ->
 
 
 def run_episode(seed: int, method: str, cfg: dict[str, Any], out: Path, budget: Budget, router: Router,
-                fake: bool, video: bool) -> dict[str, Any]:
+                fake: bool, video: bool, clients: tuple[Any, Any] | None = None) -> dict[str, Any]:
     gw, gh = cfg["sim"]["grid"]
     room = generate_room(seed, gw, gh, cfg["sim"]["cell_m"])
     world = World(room, cfg, seed)
@@ -85,8 +86,7 @@ def run_episode(seed: int, method: str, cfg: dict[str, Any], out: Path, budget: 
     router.new_episode()
     log: dict[str, Any] | None = None
     if method == "agent":
-        vlm = FakeVLM((gw, gh), seed=seed)
-        planner = FakePlanner(seed=seed)
+        vlm, planner = clients if clients else (FakeVLM((gw, gh), seed=seed), FakePlanner(seed=seed))
         log = run_agent(SensorView(world), vlm, planner, budget, router, cfg, frame_dir=edir / "frames")
     elif method == "blind":
         run_blind(world, cfg)
@@ -176,14 +176,24 @@ def main(argv: list[str] | None = None) -> int:
             root.mkdir(parents=True, exist_ok=True)
             marker.touch()
         return 0
+    clients = None
     if not args.fake:
-        print("Real model clients are not implemented yet (M2): they need model ids verified against "
-              "/v1/models and prices from the console. Use --fake.", file=sys.stderr)
-        return 2
+        missing = [r for r in ROLES if any(cfg["models"][r].get(k) is None for k in ("id", "price_in", "price_out"))]
+        if missing:
+            print(f"config.yaml models.{missing} need id, price_in and price_out.\n"
+                  "Ids come only from `python -m crab_rescue.discover --yes`; prices only from the "
+                  "Token Factory console. Nothing was sent.", file=sys.stderr)
+            return 2
+        key, base = env_credentials()
+        transport = ChatTransport(base, key)
+        ids = {r: cfg["models"][r]["id"] for r in ROLES}
+        cache = DiskCache(root / ".cache")
+        mt = cfg["caps"]["max_tokens_per_call"]
+        clients = (NebiusVLM(transport, ids, mt, cache), NebiusPlanner(transport, ids, mt, cache))
 
     out = root / time.strftime("%Y%m%d_%H%M%S")
     out.mkdir(parents=True, exist_ok=True)
-    budget = Budget(cfg, ledger_path=out / "ledger.jsonl", fake=True)
+    budget = Budget(cfg, ledger_path=out / "ledger.jsonl", fake=args.fake)
     router = Router(cfg["caps"]["max_escalations"], cfg["agent"]["low_confidence"])
     signal.signal(signal.SIGINT, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
     rows = []
@@ -191,13 +201,13 @@ def main(argv: list[str] | None = None) -> int:
         for seed in range(args.seed_start, args.seed_start + args.seeds):
             for method in methods:
                 t0 = time.time()
-                m = run_episode(seed, method, cfg, out, budget, router, True, not args.no_video)
+                m = run_episode(seed, method, cfg, out, budget, router, args.fake, not args.no_video, clients)
                 rows.append(m)
                 print(f"seed {seed:3d} {method:6s} {m['outcome']:24s} sim {m['sim_time_s']:6.1f}s "
                       f"wall {time.time() - t0:5.1f}s")
     except KeyboardInterrupt:
         print("interrupted: saving what exists")
-    write_report(out, rows, cfg, True, args.seeds)
+    write_report(out, rows, cfg, args.fake, args.seeds)
     print(f"\nrun saved to {out}\n  total spend ${budget.total_usd:.4f} ({budget.total_calls} calls)")
     return 0
 
