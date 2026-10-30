@@ -17,10 +17,13 @@ class PriceUnknown(RuntimeError):
 
 
 class Budget:
-    def __init__(self, cfg: dict[str, Any], ledger_path: Path | None = None, fake: bool = False):
+    def __init__(self, cfg: dict[str, Any], ledger_path: Path | None = None, fake: bool = False,
+                 allow_unpriced: bool = False):
         self.caps = cfg["caps"]
         self.models = cfg["models"]
         self.fake = fake
+        self.allow_unpriced = allow_unpriced   # app only: run without prices, $ cap not enforceable
+        self.rows: list[dict[str, Any]] = []
         self.ledger_path = ledger_path
         self.total_usd = 0.0
         self.total_calls = 0
@@ -46,10 +49,18 @@ class Budget:
             raise BudgetExceeded(f"max_escalations={self.caps['max_escalations']}")
         if est_in + est_out > self.caps["max_tokens_per_call"] * 4 and not self.fake:
             raise BudgetExceeded("estimated tokens for this call exceed the per-call cap x4")
-        if not self.fake:
+        if not self.fake and not self.allow_unpriced:
             m = self.models[role]
             if m.get("price_in") is None or m.get("price_out") is None or m.get("id") is None:
                 raise PriceUnknown(f"models.{role}: id/price missing in config.yaml")
+            # Reserve against the full configured completion allowance before sending a
+            # request. A single response must not push the run over its dollar cap.
+            projected = self.cost_of(role, est_in, self.caps["max_tokens_per_call"])
+            if self.total_usd + projected > self.caps["max_total_usd"]:
+                raise BudgetExceeded(
+                    f"projected call cost ${projected:.6f} would exceed "
+                    f"max_total_usd=${self.caps['max_total_usd']:.6f}"
+                )
         if self.total_usd >= self.caps["max_total_usd"]:
             raise BudgetExceeded(f"max_total_usd={self.caps['max_total_usd']}")
 
@@ -77,6 +88,7 @@ class Budget:
         row = {"ts": time.time(), "episode": self.episode, "kind": kind, "role": role,
                "model": model, "tokens_in": tin, "tokens_out": tout,
                "latency_s": round(latency_s, 4), "cost_usd": cost, "fake": self.fake, **meta}
+        self.rows.append(row)
         if self.ledger_path:
             with self.ledger_path.open("a", encoding="utf-8") as f:
                 f.write(json.dumps(row) + "\n")

@@ -1,4 +1,4 @@
-<!-- tracks: README.md @ sha256:6c35e964fc575f2d -->
+<!-- tracks: README.md @ sha256:067987fcbd27701f -->
 
 ![跳跳](docs/media/jumper-hero-zh.png)
 
@@ -9,6 +9,9 @@
 **跳跳是一台 22 自由度螃蟹机器人。** [查看硬件 →](docs/HARDWARE.zh.md)
 
 本仓库是跳跳的外观、动作与场景创作 AI 工具集。在 AI 编程助手中打开本仓库，试试下面的提示词。
+
+> 🔥 **Crab Rescue（NVIDIA x Nebius 黑客松，Physical AI 赛道）：** 由 Nebius Token Factory 提供的
+> NVIDIA Nemotron-3.5-Super-VL 一步一步驾驶跳跳穿过着火的房间，救出人偶。[了解原理与运行方法 →](crab_rescue/README.md)
 
 > 🦀 **免费获得跳跳！** [了解如何领取 →](https://beunlimited.me/zh/events/crab-robot-challenge-2026)
 

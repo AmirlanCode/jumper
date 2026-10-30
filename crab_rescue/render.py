@@ -90,12 +90,17 @@ class VideoWriter:
     def __init__(self, path: Path, size: tuple[int, int], fps: int = 10):
         self.path = path
         self.proc = None
-        if shutil.which("ffmpeg") is None:
-            return
+        ffmpeg = shutil.which("ffmpeg")
+        if ffmpeg is None:
+            try:
+                import imageio_ffmpeg
+                ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
+            except ImportError:
+                return
         w, h = size[0] - size[0] % 2, size[1] - size[1] % 2
         self.size = (w, h)
         self.proc = subprocess.Popen(
-            ["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
+            [ffmpeg, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24",
              "-s", f"{w}x{h}", "-r", str(fps), "-i", "-", "-c:v", "libx264", "-preset", "veryfast",
              "-crf", "28", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(path)],
             stdin=subprocess.PIPE)

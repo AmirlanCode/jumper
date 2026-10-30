@@ -75,3 +75,8 @@ def _drive(world: World, cfg: dict[str, Any], make_plan, replan_period: float, l
             world.release()
         world.step(cmd)
     return {"label": label, "plans": plans, "events": events}
+
+
+def run_baselines_entry(method: str, world: World, cfg: dict[str, Any]) -> dict[str, Any]:
+    """Used by the live app: run one baseline by name."""
+    return run_blind(world, cfg) if method == "blind" else run_oracle(world, cfg)

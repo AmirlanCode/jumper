@@ -43,7 +43,8 @@ def build_timeline(run: Path, seed: int) -> list[dict[str, Any]]:
                           "json": p.get("parsed") or p.get("raw"), "error": p.get("error")})
     if (d / "plans.json").exists():
         for p in json.loads((d / "plans.json").read_text()):
-            items.append({"t": p["t"], "kind": "plan", "role": p["role"], "model": p["model"],
+            items.append({"t": p["t"], "kind": "plan", "role": p["role"],
+                          "model": p.get("model", "local safety A*"),
                           "reason": p["reason"], "accepted": p["accepted"],
                           "rejected_by": p.get("rejected_by"), "reasons": p.get("reasons"),
                           "json": p.get("plan") or p.get("raw")})

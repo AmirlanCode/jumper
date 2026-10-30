@@ -69,3 +69,8 @@ MUJOCO_LOG.TXT
 # in .env.local, which takes precedence and is not committed.
 .env.local
 .claude/launch.json
+
+# Crab Rescue 3D
+.venv_rescue/
+crab_rescue/runs3d/*/frames/
+/runs3d/

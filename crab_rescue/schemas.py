@@ -110,5 +110,28 @@ def parse_perception(text: str) -> Perception:
     return Perception.model_validate(json.loads(extract_json(text)))
 
 
+def parse_model_perception(text: str) -> Perception:
+    """Keep target coordinates from the VLM; derive hazards and boxes from the image pixels."""
+    raw = json.loads(extract_json(text))
+    if not isinstance(raw, dict):
+        raise ValueError("perception reply must be a JSON object")
+
+    def point(value: object) -> object:
+        if isinstance(value, list) and len(value) == 2:
+            return {"x": value[0], "y": value[1]}
+        if isinstance(value, dict):
+            if "x" in value and "y" in value:
+                return {"x": value["x"], "y": value["y"]}
+            if all(k in value for k in ("x0", "y0", "x1", "y1")):
+                return {"x": (value["x0"] + value["x1"]) / 2,
+                        "y": (value["y0"] + value["y1"]) / 2}
+        return value
+
+    cleaned = {"figurine": point(raw.get("figurine")), "exit": point(raw.get("exit")),
+               "fire": [], "obstacles": [], "confidence": raw.get("confidence", 0.5),
+               "notes": str(raw.get("notes", ""))[:400]}
+    return Perception.model_validate(cleaned)
+
+
 def parse_plan(text: str, bounds: tuple[float, float]) -> Plan:
     return Plan.model_validate(json.loads(extract_json(text)), context={"bounds": bounds})

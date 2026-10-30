@@ -1,0 +1,1764 @@
+{
+ "source": "jumper-original assembled robot.urdf (V1.6-1)",
+ "root": "base_link",
+ "base_height_m": 0.10704,
+ "home": {
+  "LF_J0_joint": -0.5507,
+  "LF_J1_joint": -1.0658,
+  "LF_J2_joint": -0.4408,
+  "LF_J3_joint": -1.4226,
+  "LF_J4_joint": 0.0,
+  "RF_J0_joint": 0.5524,
+  "RF_J1_joint": -1.066,
+  "RF_J2_joint": 0.4414,
+  "RF_J3_joint": 1.4212,
+  "RF_J4_joint": 0.1,
+  "LM_J0_joint": 0.0012,
+  "LM_J1_joint": 0.5356,
+  "LM_J2_joint": -1.8321,
+  "RM_J0_joint": -0.0012,
+  "RM_J1_joint": -0.5376,
+  "RM_J2_joint": 1.8364,
+  "LR_J0_joint": 0.6313,
+  "LR_J1_joint": 0.5534,
+  "LR_J2_joint": -1.8708,
+  "RR_J0_joint": -0.6326,
+  "RR_J1_joint": -0.5548,
+  "RR_J2_joint": 1.8739
+ },
+ "links": {
+  "world": {
+   "mesh": null
+  },
+  "base_link": {
+   "mesh": "base_link",
+   "color": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 76038,
+   "faces": 14000
+  },
+  "upper_shell_link": {
+   "mesh": "upper_shell_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 18144,
+   "faces": 4500
+  },
+  "display_module_link": {
+   "mesh": "display_module_link",
+   "color": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 849,
+   "faces": 849
+  },
+  "tof_sensor_link": {
+   "mesh": "tof_sensor_link",
+   "color": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 2088,
+   "faces": 2088
+  },
+  "camera_link": {
+   "mesh": "camera_link",
+   "color": [
+    0.0,
+    0.0,
+    0.0,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 648,
+   "faces": 648
+  },
+  "LF_shoulder_link": {
+   "mesh": "LF_shoulder_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 15074,
+   "faces": 4500
+  },
+  "LF_upper_arm_link": {
+   "mesh": "LF_upper_arm_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 12110,
+   "faces": 4500
+  },
+  "LF_forearm_link": {
+   "mesh": "LF_forearm_link",
+   "color": [
+    0.68,
+    0.7,
+    0.72,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 9010,
+   "faces": 4499
+  },
+  "LF_palm_link": {
+   "mesh": "LF_palm_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 15080,
+   "faces": 4500
+  },
+  "LF_palm_pad_f_link": {
+   "mesh": "LF_palm_pad_f_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 5934,
+   "faces": 4500
+  },
+  "LF_palm_pad_b_link": {
+   "mesh": "LF_palm_pad_b_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 5746,
+   "faces": 4500
+  },
+  "LF_finger_link": {
+   "mesh": "LF_finger_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 8162,
+   "faces": 4500
+  },
+  "LF_finger_tip_link": {
+   "mesh": "LF_finger_tip_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 14134,
+   "faces": 4500
+  },
+  "LF_finger_grip_insert_link": {
+   "mesh": "LF_finger_grip_insert_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 2304,
+   "faces": 2304
+  },
+  "LF_palm_grip_insert_link": {
+   "mesh": "LF_palm_grip_insert_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 2566,
+   "faces": 2566
+  },
+  "RF_shoulder_link": {
+   "mesh": "RF_shoulder_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 15074,
+   "faces": 4500
+  },
+  "RF_upper_arm_link": {
+   "mesh": "RF_upper_arm_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 12110,
+   "faces": 4500
+  },
+  "RF_forearm_link": {
+   "mesh": "RF_forearm_link",
+   "color": [
+    0.68,
+    0.7,
+    0.72,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 9010,
+   "faces": 4499
+  },
+  "RF_palm_link": {
+   "mesh": "RF_palm_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 15080,
+   "faces": 4500
+  },
+  "RF_palm_pad_f_link": {
+   "mesh": "RF_palm_pad_f_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 5746,
+   "faces": 4500
+  },
+  "RF_palm_pad_b_link": {
+   "mesh": "RF_palm_pad_b_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 5934,
+   "faces": 4500
+  },
+  "RF_palm_grip_insert_link": {
+   "mesh": "RF_palm_grip_insert_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 2566,
+   "faces": 2566
+  },
+  "RF_finger_link": {
+   "mesh": "RF_finger_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 8162,
+   "faces": 4500
+  },
+  "RF_finger_grip_insert_link": {
+   "mesh": "RF_finger_grip_insert_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 2304,
+   "faces": 2304
+  },
+  "RF_finger_tip_link": {
+   "mesh": "RF_finger_tip_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 14134,
+   "faces": 4500
+  },
+  "LM_hip_link": {
+   "mesh": "LM_hip_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 13168,
+   "faces": 4499
+  },
+  "LM_thigh_link": {
+   "mesh": "LM_thigh_link",
+   "color": [
+    0.68,
+    0.7,
+    0.72,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 9010,
+   "faces": 4500
+  },
+  "LM_calf_link": {
+   "mesh": "LM_calf_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 14358,
+   "faces": 4500
+  },
+  "LM_foot_tip_link": {
+   "mesh": "LM_foot_tip_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 1934,
+   "faces": 1934
+  },
+  "RM_hip_link": {
+   "mesh": "RM_hip_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 13168,
+   "faces": 4499
+  },
+  "RM_thigh_link": {
+   "mesh": "RM_thigh_link",
+   "color": [
+    0.68,
+    0.7,
+    0.72,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 9010,
+   "faces": 4500
+  },
+  "RM_calf_link": {
+   "mesh": "RM_calf_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 13386,
+   "faces": 4500
+  },
+  "RM_foot_tip_link": {
+   "mesh": "RM_foot_tip_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 1934,
+   "faces": 1934
+  },
+  "LR_hip_link": {
+   "mesh": "LR_hip_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 13168,
+   "faces": 4499
+  },
+  "LR_thigh_link": {
+   "mesh": "LR_thigh_link",
+   "color": [
+    0.68,
+    0.7,
+    0.72,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 9010,
+   "faces": 4500
+  },
+  "LR_calf_link": {
+   "mesh": "LR_calf_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 14358,
+   "faces": 4500
+  },
+  "LR_foot_tip_link": {
+   "mesh": "LR_foot_tip_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 1934,
+   "faces": 1934
+  },
+  "RR_hip_link": {
+   "mesh": "RR_hip_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 13168,
+   "faces": 4499
+  },
+  "RR_thigh_link": {
+   "mesh": "RR_thigh_link",
+   "color": [
+    0.68,
+    0.7,
+    0.72,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 9010,
+   "faces": 4500
+  },
+  "RR_calf_link": {
+   "mesh": "RR_calf_link",
+   "color": [
+    0.85,
+    0.08,
+    0.05,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 14358,
+   "faces": 4500
+  },
+  "RR_foot_tip_link": {
+   "mesh": "RR_foot_tip_link",
+   "color": [
+    0.816,
+    0.82,
+    0.804,
+    1.0
+   ],
+   "visual_xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "visual_rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "faces_full": 1934,
+   "faces": 1934
+  }
+ },
+ "joints": [
+  {
+   "name": "floating_base",
+   "type": "floating",
+   "parent": "world",
+   "child": "base_link",
+   "xyz": [
+    0.0,
+    0.0,
+    0.0
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "upper_shell_joint",
+   "type": "fixed",
+   "parent": "base_link",
+   "child": "upper_shell_link",
+   "xyz": [
+    -0.00731370227756162,
+    0.0,
+    0.031499999999999
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "display_module_joint",
+   "type": "fixed",
+   "parent": "base_link",
+   "child": "display_module_link",
+   "xyz": [
+    0.0802718281911144,
+    1.01590834547417e-05,
+    0.0495237801316613
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "tof_sensor_joint",
+   "type": "fixed",
+   "parent": "base_link",
+   "child": "tof_sensor_link",
+   "xyz": [
+    0.090677981288684,
+    0.0,
+    0.0168455481688004
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "camera_joint",
+   "type": "fixed",
+   "parent": "base_link",
+   "child": "camera_link",
+   "xyz": [
+    0.091677981288684,
+    0.0141808968430935,
+    0.016847582356009
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "LF_J0_joint",
+   "type": "revolute",
+   "parent": "base_link",
+   "child": "LF_shoulder_link",
+   "xyz": [
+    0.050676062237814,
+    0.0610008968346535,
+    0.0107
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "lower": -2.75,
+   "upper": 0.7
+  },
+  {
+   "name": "LF_J1_joint",
+   "type": "revolute",
+   "parent": "LF_shoulder_link",
+   "child": "LF_upper_arm_link",
+   "xyz": [
+    0.0,
+    0.00639999999999998,
+    -0.0311599999999992
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "lower": -4.75,
+   "upper": 1.4
+  },
+  {
+   "name": "LF_J2_joint",
+   "type": "revolute",
+   "parent": "LF_upper_arm_link",
+   "child": "LF_forearm_link",
+   "xyz": [
+    0.0009,
+    0.04787,
+    0.00011132
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -2.2,
+   "upper": 1.65
+  },
+  {
+   "name": "LF_J3_joint",
+   "type": "revolute",
+   "parent": "LF_forearm_link",
+   "child": "LF_palm_link",
+   "xyz": [
+    -0.0012,
+    0.05,
+    0.0
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -2.1,
+   "upper": 1.65
+  },
+  {
+   "name": "LF_palm_pad_f_joint",
+   "type": "fixed",
+   "parent": "LF_palm_link",
+   "child": "LF_palm_pad_f_link",
+   "xyz": [
+    0.00880303793231768,
+    0.141546166150035,
+    -0.000588323582173599
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "LF_palm_pad_b_joint",
+   "type": "fixed",
+   "parent": "LF_palm_link",
+   "child": "LF_palm_pad_b_link",
+   "xyz": [
+    -0.00740200923841508,
+    0.141545514502896,
+    -0.000588169542919226
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "LF_J4_joint",
+   "type": "revolute",
+   "parent": "LF_palm_link",
+   "child": "LF_finger_link",
+   "xyz": [
+    0.0021,
+    0.037275,
+    -0.011472
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -1.6,
+   "upper": 0.1
+  },
+  {
+   "name": "LF_finger_tip_joint",
+   "type": "fixed",
+   "parent": "LF_finger_link",
+   "child": "LF_finger_tip_link",
+   "xyz": [
+    -0.00220000001391409,
+    0.106219232837006,
+    -0.00327707073319651
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "LF_finger_grip_insert_joint",
+   "type": "fixed",
+   "parent": "LF_finger_link",
+   "child": "LF_finger_grip_insert_link",
+   "xyz": [
+    -0.00175892989304954,
+    0.066749271504494,
+    -0.00277963143968999
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "LF_palm_grip_insert_joint",
+   "type": "fixed",
+   "parent": "LF_palm_link",
+   "child": "LF_palm_grip_insert_link",
+   "xyz": [
+    0.00040632,
+    0.10443,
+    0.0026781
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "RF_J0_joint",
+   "type": "revolute",
+   "parent": "base_link",
+   "child": "RF_shoulder_link",
+   "xyz": [
+    0.050676,
+    -0.060999,
+    0.0107
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "lower": -0.7,
+   "upper": 2.75
+  },
+  {
+   "name": "RF_J1_joint",
+   "type": "revolute",
+   "parent": "RF_shoulder_link",
+   "child": "RF_upper_arm_link",
+   "xyz": [
+    0.0,
+    -0.00639999999999999,
+    -0.0311599999999992
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    1.0,
+    0.0
+   ],
+   "lower": -4.75,
+   "upper": 1.4
+  },
+  {
+   "name": "RF_J2_joint",
+   "type": "revolute",
+   "parent": "RF_upper_arm_link",
+   "child": "RF_forearm_link",
+   "xyz": [
+    -0.000899999999998513,
+    -0.0478700037549594,
+    0.00011132418307256
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -1.65,
+   "upper": 2.1
+  },
+  {
+   "name": "RF_J3_joint",
+   "type": "revolute",
+   "parent": "RF_forearm_link",
+   "child": "RF_palm_link",
+   "xyz": [
+    0.00119999999218565,
+    -0.05,
+    0.0
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -1.65,
+   "upper": 2.1
+  },
+  {
+   "name": "RF_palm_pad_f_joint",
+   "type": "fixed",
+   "parent": "RF_palm_link",
+   "child": "RF_palm_pad_f_link",
+   "xyz": [
+    0.00740200923841602,
+    -0.141545514502896,
+    -0.000588169542919221
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "RF_palm_pad_b_joint",
+   "type": "fixed",
+   "parent": "RF_palm_link",
+   "child": "RF_palm_pad_b_link",
+   "xyz": [
+    -0.00880303793231674,
+    -0.141546166150036,
+    -0.000588323582173599
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "RF_palm_grip_insert_joint",
+   "type": "fixed",
+   "parent": "RF_palm_link",
+   "child": "RF_palm_grip_insert_link",
+   "xyz": [
+    -0.000406316529837331,
+    -0.104426781012235,
+    0.00267810079495568
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "RF_J4_joint",
+   "type": "revolute",
+   "parent": "RF_palm_link",
+   "child": "RF_finger_link",
+   "xyz": [
+    -0.00209999999216759,
+    -0.0372746966382936,
+    -0.0114717821682261
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": 0.1,
+   "upper": 1.6
+  },
+  {
+   "name": "RF_finger_grip_insert_joint",
+   "type": "fixed",
+   "parent": "RF_finger_link",
+   "child": "RF_finger_grip_insert_link",
+   "xyz": [
+    0.00175892989304999,
+    -0.0667492715044941,
+    -0.00277963143968996
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "RF_finger_tip_joint",
+   "type": "fixed",
+   "parent": "RF_finger_link",
+   "child": "RF_finger_tip_link",
+   "xyz": [
+    0.00139999998599694,
+    -0.106219232837006,
+    -0.00327701253714026
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "LM_J0_joint",
+   "type": "revolute",
+   "parent": "base_link",
+   "child": "LM_hip_link",
+   "xyz": [
+    -0.0073239,
+    0.066501,
+    0.00745
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "lower": -0.75,
+   "upper": 1.0
+  },
+  {
+   "name": "LM_J1_joint",
+   "type": "revolute",
+   "parent": "LM_hip_link",
+   "child": "LM_thigh_link",
+   "xyz": [
+    0.00110010294748826,
+    0.0561299979818503,
+    -0.0249300000007529
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -2.4,
+   "upper": 1.5
+  },
+  {
+   "name": "LM_J2_joint",
+   "type": "revolute",
+   "parent": "LM_thigh_link",
+   "child": "LM_calf_link",
+   "xyz": [
+    -0.00119990827036384,
+    0.0500000022014308,
+    0.0
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -2.4,
+   "upper": 1.8
+  },
+  {
+   "name": "LM_foot_tip_joint",
+   "type": "fixed",
+   "parent": "LM_calf_link",
+   "child": "LM_foot_tip_link",
+   "xyz": [
+    0.000789315469683329,
+    0.120917401784297,
+    0.0062403646132292
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "RM_J0_joint",
+   "type": "revolute",
+   "parent": "base_link",
+   "child": "RM_hip_link",
+   "xyz": [
+    -0.0073239,
+    -0.066499,
+    0.00745
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "lower": -1.0,
+   "upper": 0.75
+  },
+  {
+   "name": "RM_J1_joint",
+   "type": "revolute",
+   "parent": "RM_hip_link",
+   "child": "RM_thigh_link",
+   "xyz": [
+    -0.00109999997828653,
+    -0.0561299999998696,
+    -0.0249300000007529
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -1.5,
+   "upper": 2.4
+  },
+  {
+   "name": "RM_J2_joint",
+   "type": "revolute",
+   "parent": "RM_thigh_link",
+   "child": "RM_calf_link",
+   "xyz": [
+    0.00119999999422436,
+    -0.0500000000001423,
+    0.0
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -1.8,
+   "upper": 2.4
+  },
+  {
+   "name": "RM_foot_tip_joint",
+   "type": "fixed",
+   "parent": "RM_calf_link",
+   "child": "RM_foot_tip_link",
+   "xyz": [
+    -0.000789093649468921,
+    -0.120917403232075,
+    0.0062403646132292
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "LR_J0_joint",
+   "type": "revolute",
+   "parent": "base_link",
+   "child": "LR_hip_link",
+   "xyz": [
+    -0.065324,
+    0.055501,
+    0.00745
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "lower": -0.6,
+   "upper": 2.75
+  },
+  {
+   "name": "LR_J1_joint",
+   "type": "revolute",
+   "parent": "LR_hip_link",
+   "child": "LR_thigh_link",
+   "xyz": [
+    0.00110010294738903,
+    0.0561299979818523,
+    -0.0249300000007529
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -2.4,
+   "upper": 1.6
+  },
+  {
+   "name": "LR_J2_joint",
+   "type": "revolute",
+   "parent": "LR_thigh_link",
+   "child": "LR_calf_link",
+   "xyz": [
+    -0.00119990827045224,
+    0.0500000022014286,
+    0.0
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -2.4,
+   "upper": 1.8
+  },
+  {
+   "name": "LR_foot_tip_joint",
+   "type": "fixed",
+   "parent": "LR_calf_link",
+   "child": "LR_foot_tip_link",
+   "xyz": [
+    0.000789315469316815,
+    0.120917403985727,
+    0.00624036461405019
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  },
+  {
+   "name": "RR_J0_joint",
+   "type": "revolute",
+   "parent": "base_link",
+   "child": "RR_hip_link",
+   "xyz": [
+    -0.0653239377622046,
+    -0.055499103165328,
+    0.00745
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    0.0,
+    0.0,
+    1.0
+   ],
+   "lower": -2.75,
+   "upper": 0.6
+  },
+  {
+   "name": "RR_J1_joint",
+   "type": "revolute",
+   "parent": "RR_hip_link",
+   "child": "RR_thigh_link",
+   "xyz": [
+    -0.00109999997841868,
+    -0.056129999999867,
+    -0.0249300000007529
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -1.6,
+   "upper": 2.4
+  },
+  {
+   "name": "RR_J2_joint",
+   "type": "revolute",
+   "parent": "RR_thigh_link",
+   "child": "RR_calf_link",
+   "xyz": [
+    0.00119999999410667,
+    -0.0500000000001451,
+    0.0
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": [
+    1.0,
+    0.0,
+    0.0
+   ],
+   "lower": -1.8,
+   "upper": 2.4
+  },
+  {
+   "name": "RR_foot_tip_joint",
+   "type": "fixed",
+   "parent": "RR_calf_link",
+   "child": "RR_foot_tip_link",
+   "xyz": [
+    -0.000789093649753575,
+    -0.120917403232073,
+    0.0062403646132292
+   ],
+   "rpy": [
+    0.0,
+    -0.0,
+    0.0
+   ],
+   "axis": null,
+   "lower": null,
+   "upper": null
+  }
+ ]
+}

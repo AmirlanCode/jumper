@@ -62,10 +62,17 @@ class ChatTransport:
                 time.sleep(min(8.0, 1.0 * 2 ** attempt))        # bounded exponential backoff
         raise ApiError(f"gave up after {self.max_retries + 1} attempts ({last})")
 
-    def chat(self, model: str, messages: list[dict[str, Any]], max_tokens: int) -> dict[str, Any]:
-        return self._request("POST", "/chat/completions",
-                             {"model": model, "messages": messages, "max_tokens": max_tokens,
-                              "temperature": 0})
+    def chat(self, model: str, messages: list[dict[str, Any]], max_tokens: int,
+             json_mode: bool = False) -> dict[str, Any]:
+        body: dict[str, Any] = {"model": model, "messages": messages,
+                                "max_tokens": max_tokens, "temperature": 0}
+        if json_mode:
+            body["response_format"] = {"type": "json_object"}
+        if "nemotron" in model.lower():
+            # Nemotron reasons by default and spent all 1500 tokens on it with empty content
+            # (Nemotron-3_5-Lightning, live run 2026-10-30); thinking off gives the JSON in ~30.
+            body["chat_template_kwargs"] = {"enable_thinking": False}
+        return self._request("POST", "/chat/completions", body)
 
     def list_models(self) -> dict[str, Any]:
         return self._request("GET", "/models", None)
@@ -82,13 +89,14 @@ def _result(resp: dict[str, Any], model: str, latency: float, est_in: int) -> Ca
 
 class NebiusVLM:
     def __init__(self, transport: ChatTransport, models: dict[str, str], max_tokens: int,
-                 cache: DiskCache | None = None):
+                 cache: DiskCache | None = None, system: str | None = None):
         self.t, self.models, self.max_tokens, self.cache = transport, models, max_tokens, cache
+        self.system = system or VLM_SYSTEM
 
     def perceive(self, role: str, image_png: bytes, meta: dict[str, Any]) -> CallResult:
         model = self.models[role]
         b64 = base64.b64encode(image_png).decode()
-        messages = [{"role": "system", "content": VLM_SYSTEM},
+        messages = [{"role": "system", "content": self.system},
                     {"role": "user", "content": [
                         {"type": "text", "text": vlm_user_text(meta)},
                         {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{b64}"}}]}]
@@ -96,7 +104,7 @@ class NebiusVLM:
         if key and (hit := self.cache.get(key)):
             return CallResult(hit.text, 0, 0, 0.0, f"{model} (cached)")
         t0 = time.time()
-        resp = self.t.chat(model, messages, self.max_tokens)
+        resp = self.t.chat(model, messages, self.max_tokens, json_mode=True)
         res = _result(resp, model, time.time() - t0, est_in=1500)
         if key and res.text:
             self.cache.put(key, res)
@@ -116,7 +124,7 @@ class NebiusPlanner:
         if key and (hit := self.cache.get(key)):
             return CallResult(hit.text, 0, 0, 0.0, f"{model} (cached)")
         t0 = time.time()
-        resp = self.t.chat(model, messages, self.max_tokens)
+        resp = self.t.chat(model, messages, self.max_tokens, json_mode=True)
         res = _result(resp, model, time.time() - t0, est_in=len(user) // 4)
         if key and res.text:
             self.cache.put(key, res)

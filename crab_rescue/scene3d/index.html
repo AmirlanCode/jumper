@@ -1,0 +1,263 @@
+<title>Crab Rescue 3D</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Scene palette: the site wears the colours of the 3D room in the replay. Deep navy floor, glowing
+   blue walls (0x1d5f9c and their lit edge), the green safe zone (0x28be5a), fire orange (0xee4e18)
+   and the yellow door marker. Layout stays arcade-broadcast: hard edges and offset shadows. */
+:root{
+  --night:#050b1a; --floor:#0a1730; --panel:#0c1f3d; --panel-2:#0f2852; --deep:#020612;
+  --wall:#1d5f9c; --edge:#2f8fe8; --sky:#86abff; --text:#e6eeff; --dim:#9fb3d9;
+  --zone:#28be5a; --zone-hi:#3ddc7a; --zone-ink:#062a14; --fire:#ee4e18; --fire-hi:#ff7a2f; --door:#ffc93c; --fig:#2470ff; --bad:#ff5a4f;
+  --display:"Saira Extra Condensed","Arial Narrow",Impact,sans-serif; --body:"DM Sans",system-ui,sans-serif; --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  --shadow:6px 6px 0 var(--deep);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--night);color:var(--text);font-family:var(--body)}
+body{font-size:15px;line-height:1.55;background:
+  linear-gradient(rgba(47,143,232,.07) 1px,transparent 1px) 0 0/48px 48px,
+  linear-gradient(90deg,rgba(47,143,232,.07) 1px,transparent 1px) 0 0/48px 48px,var(--night)}
+button,select,input{font:inherit;color:inherit}
+a{color:var(--sky)}
+.wrap{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{font:600 .78rem/1.4 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--fire-hi);margin:0 0 6px}
+.mono{font-family:var(--mono)}
+
+/* marquee */
+.marquee{background:radial-gradient(ellipse at 30% 120%,#0f3a6e 0,transparent 60%),repeating-conic-gradient(from 0deg at 50% 125%,#0a1a36 0deg 6deg,var(--night) 6deg 12deg);border-bottom:3px solid var(--edge);box-shadow:0 0 24px rgba(47,143,232,.35)}
+.marquee .wrap{display:flex;align-items:center;gap:28px;padding-block:26px 22px;flex-wrap:wrap}
+.mark{width:92px;height:92px;flex:none;background:var(--panel);border:3px solid var(--edge);border-radius:18px;box-shadow:5px 5px 0 var(--fire);display:grid;place-items:center;transform:rotate(-6deg)}
+.mark svg{width:70px;height:70px}
+.marquee h1{margin:0;font:800 clamp(3.2rem,8.6vw,6.8rem)/.86 var(--display);letter-spacing:.02em;text-transform:uppercase}
+.marquee h1 span{display:block;color:var(--text);text-shadow:-3px 0 var(--fig),0 0 18px rgba(134,171,255,.45)}
+.marquee h1 span+span{color:var(--fire-hi);text-shadow:-3px 0 var(--wall),0 0 22px rgba(238,78,24,.45)}
+.marquee .tagline{flex:1;min-width:220px;display:flex;justify-content:flex-end}
+.ticket{background:var(--zone);color:var(--zone-ink);border:3px solid var(--deep);box-shadow:6px 6px 0 var(--deep);padding:12px 16px;max-width:300px;transform:rotate(1.5deg)}
+.ticket b{display:block;font:800 1.7rem/1 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.ticket small{display:block;font:700 .68rem/1.5 var(--mono);letter-spacing:.12em;text-transform:uppercase;overflow-wrap:anywhere}
+
+/* intro */
+.intro{padding:40px 0 18px;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:28px;align-items:end}
+.intro h2{margin:0;text-wrap:balance;max-width:24ch;font:800 clamp(2.3rem,5vw,4rem)/.92 var(--display);text-transform:uppercase;letter-spacing:.01em}
+.intro .lede{font-size:clamp(1.05rem,1.6vw,1.25rem);margin:12px 0 0;max-width:60ch;color:var(--dim)}
+#ribbon{border:3px solid var(--edge);background:var(--panel);box-shadow:var(--shadow);padding:12px 14px;font-size:.92rem}
+#ribbon b{font:800 1.3rem/1.05 var(--display);text-transform:uppercase;letter-spacing:.03em;display:block;margin-bottom:2px}
+#ribbon.live{background:var(--zone);color:var(--zone-ink);border-color:var(--deep)}
+#ribbon.live b::before{content:"● ";color:#c4170c}
+
+/* hall: monitor + scoreboard */
+.hall{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:26px;align-items:start;padding:14px 0 10px}
+.hall h3{margin:0 0 12px;font:800 2rem/1 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.tv{background:linear-gradient(160deg,#123566,#0a1d3c);border:3px solid var(--edge);border-radius:22px;padding:14px;box-shadow:8px 8px 0 var(--fire);position:relative}
+.tv::after{content:"";position:absolute;left:12%;right:12%;bottom:-20px;height:16px;background:linear-gradient(90deg,transparent 0 6%,var(--edge) 6% 9%,transparent 9% 91%,var(--edge) 91% 94%,transparent 94%)}
+.tv-inner{background:var(--deep);border:2px solid var(--wall);border-radius:14px;padding:10px}
+#stage{position:relative;aspect-ratio:16/9;width:100%;background:var(--deep);border:2px solid var(--wall);border-radius:10px;overflow:hidden}
+#c{position:absolute;inset:0;width:100%;height:100%;display:block}
+#labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.lab{position:absolute;transform:translate(-50%,-100%);font:700 10px/1 var(--mono);padding:4px 6px;white-space:nowrap;letter-spacing:.06em;border:2px solid var(--deep)}
+.l-fig{background:var(--fig);color:#fff}
+.l-exit{background:var(--zone);color:var(--zone-ink)}
+.l-det{background:var(--deep);color:var(--zone-hi);border-color:var(--zone)}
+#hud-left{position:absolute;left:12px;top:12px;display:flex;flex-direction:column;gap:6px;max-width:60%}
+#phase-name{font:800 1.8rem/1 var(--display);text-transform:uppercase;letter-spacing:.02em;color:var(--text);text-shadow:-2px 0 var(--fig),0 2px 10px #000}
+#phases{display:flex;gap:3px;flex-wrap:wrap}
+#phases span{font:700 9px/1 var(--mono);padding:4px 6px;background:#020612cc;color:var(--dim);letter-spacing:.1em;border:1px solid var(--wall)}
+#phases span.on{background:var(--door);color:var(--deep);border-color:var(--door)}
+#phases span.done{color:var(--zone-hi)}
+.stats{display:flex;gap:12px;font:700 10px/1.2 var(--mono);color:var(--dim);background:#020612cc;padding:5px 8px;width:max-content;max-width:100%;flex-wrap:wrap;text-transform:uppercase;letter-spacing:.12em}
+.stats b{color:var(--text)}
+#last-action{font-size:12px;line-height:1.4;background:#020612d9;padding:7px 9px;color:var(--text);max-width:400px;border-left:3px solid var(--zone)}
+#bar{position:absolute;left:0;right:0;bottom:0;display:flex;gap:8px;align-items:center;padding:20px 10px 9px;background:linear-gradient(transparent,#020612e6 70%);flex-wrap:wrap}
+#bar button,#bar select{background:var(--panel);color:var(--text);border:2px solid var(--edge);padding:2px 9px;cursor:pointer;font:700 1rem/1.2 var(--display);letter-spacing:.08em;text-transform:uppercase}
+#bar button:hover{background:var(--wall)}
+#bar button.on{background:var(--fire);border-color:var(--fire);color:#fff}
+#play{width:36px}
+#seekwrap{position:relative;flex:1;min-width:140px;height:22px}
+#seek{position:absolute;inset:0;width:100%;margin:0;accent-color:var(--fire);background:transparent}
+#marks{position:absolute;inset:0;pointer-events:none}
+.mk{position:absolute;top:0;width:3px;height:6px;transform:translateX(-1px)}
+.mk.nv{background:var(--zone-hi)}.mk.off{background:var(--door)}.mk.fb{background:var(--bad)}.mk.ev{background:var(--sky);height:9px}
+#tcur{font:700 11px var(--mono);color:var(--text);min-width:88px}
+
+/* chapter cards */
+.chapters{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-top:34px}
+.chap{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;background:var(--panel);color:var(--text);border:2px solid var(--edge);box-shadow:4px 4px 0 var(--deep);padding:8px 10px;cursor:pointer;min-width:0;transition:transform .12s}
+.chap:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--fire)}
+.chap b{font:800 .95rem/1 var(--display);padding:2px 6px;background:var(--door);color:var(--deep)}
+.chap b::before{content:"#0"}
+.chap span{font:800 1.25rem/1 var(--display);text-transform:uppercase;letter-spacing:.03em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+
+/* scoreboard */
+.side{display:flex;flex-direction:column;gap:20px;min-width:0}
+#panel{background:var(--panel);border:2px solid var(--edge);box-shadow:6px 6px 0 var(--zone)}
+.badge{font:800 .9rem/1 var(--display);letter-spacing:.08em;padding:4px 7px;white-space:nowrap;display:inline-block;border:2px solid var(--deep);text-transform:uppercase}
+.src-nv{background:var(--zone);color:var(--zone-ink)}.src-off{background:var(--door);color:var(--deep)}
+.src-fb{background:var(--fire);color:#fff}.src-none{background:var(--panel-2);color:var(--dim);border-color:var(--wall)}
+.chip{font:700 10px/1 var(--mono);font-style:normal;padding:3px 5px;white-space:nowrap;letter-spacing:.04em}
+.chip.ok{color:var(--zone-hi);background:rgba(40,190,90,.16)}.chip.bad{color:#fff;background:var(--bad)}
+.dim{color:var(--dim)}.pad{padding:10px}
+
+.flyer{background:var(--panel);border:2px solid var(--edge);box-shadow:var(--shadow);padding:14px}
+.capsule{margin:-14px -14px 12px;border-bottom:2px solid var(--edge);background:var(--deep);position:relative}
+.capsule img{display:block;width:100%;aspect-ratio:5/4;object-fit:cover}
+.capsule .cap{position:absolute;left:8px;bottom:8px;font:700 .62rem/1.3 var(--mono);letter-spacing:.12em;text-transform:uppercase;background:var(--deep);color:var(--zone-hi);padding:4px 6px;border:1px solid var(--zone)}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:0;font-size:13px;margin:0 0 12px}
+.kv dt,.kv dd{margin:0;padding:6px 0;border-bottom:1px solid rgba(47,143,232,.45)}
+.kv dt{font:800 1.1rem/1.1 var(--display);text-transform:uppercase;letter-spacing:.04em}
+.kv dd{text-align:right;font:600 12px/1.4 var(--mono);overflow-wrap:anywhere;color:var(--dim)}
+.btn{display:flex;justify-content:space-between;align-items:center;width:100%;padding:9px 14px;font:800 1.45rem/1 var(--display);letter-spacing:.06em;text-transform:uppercase;cursor:pointer;border:2px solid var(--deep);box-shadow:4px 4px 0 var(--deep);margin-top:10px}
+.btn::after{content:"→"}
+.btn.go{background:var(--fire);color:#fff}.btn.alt{background:var(--wall);color:var(--text);border-color:var(--edge)}
+.btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--deep)}
+#loaderr{color:var(--bad);font-size:12px;margin:6px 0 0}
+
+/* sections */
+
+
+/* recorder mode: the stage fills the frame, the scoreboard rides on top, title cards play */
+#title-in,#title-out{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;align-items:flex-start;padding:0 7%;background:linear-gradient(90deg,#020612f2 15%,#02061200 85%);opacity:0;pointer-events:none}
+body.rec #title-in,body.rec #title-out{display:flex}
+#title-in h2,#title-out h2{font:800 clamp(3.4rem,10vw,8rem)/.86 var(--display);letter-spacing:.02em;text-transform:uppercase;margin:0 0 14px;color:var(--text);text-shadow:-4px 0 var(--fig),0 0 26px rgba(134,171,255,.45)}
+#title-in h2 b,#title-out h2 b{color:var(--fire-hi);font-weight:800;display:block;text-shadow:-4px 0 var(--wall),0 0 26px rgba(238,78,24,.45)}
+#title-out h2 b{color:var(--zone-hi);text-shadow:-4px 0 var(--wall),0 0 26px rgba(40,190,90,.5)}
+#title-in p,#title-out p{font-size:22px;margin:0 0 6px;max-width:760px;color:var(--text)}
+#title-in #t-in-sub{display:inline-block;margin-top:8px;font:700 15px/1.3 var(--mono);letter-spacing:.08em;background:var(--zone);color:var(--zone-ink);padding:6px 10px}
+#title-out .note{font-size:15px;color:var(--door)}
+body.rec{background:var(--deep);overflow:hidden}
+body.rec .marquee,body.rec .band,body.rec .intro,body.rec .hall h3,body.rec .screen-osd,body.rec .chapters,body.rec .side>:not(#panel),body.rec .dots,body.rec .sections,body.rec .foot,body.rec #bar{display:none}
+body.rec .wrap,body.rec .hall,body.rec .tv,body.rec .tv-inner{display:block;max-width:none;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none}
+body.rec .tv::after{display:none}
+body.rec #stage{width:100vw;height:100vh;aspect-ratio:auto;border:0;border-radius:0}
+body.rec #panel{position:fixed;right:14px;top:14px;width:340px;max-height:calc(100vh - 28px);z-index:5;overflow:hidden;background:#0c1f3df2}
+body.rec #calls{max-height:calc(100vh - 300px)}
+
+@media (max-width:1020px){
+  .hall{grid-template-columns:minmax(0,1fr)}
+  .chapters{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .intro,.sections{grid-template-columns:minmax(0,1fr)}
+}
+@media (max-width:620px){
+  .marquee .wrap{gap:16px}.mark{width:64px;height:64px}.mark svg{width:48px;height:48px}
+  .tv{padding:8px;border-radius:16px}.tv-inner{padding:6px}
+  #stage{aspect-ratio:4/3}
+  #last-action,#labels,.stats,#speed{display:none}#phase-name{font-size:1.3rem}#hud-left{max-width:92%}
+  #phases span{font-size:8px;padding:3px 4px}#bar{padding-top:12px;gap:6px}
+  .chapters{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){.chap,.btn{transition:none}}
+
+/* video page: a YouTube-style player with the other recorded videos in a grid under it */
+.gallery{padding:46px 0 56px}
+.gallery h3{margin:0 0 14px;font:800 2rem/1 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.yt{background:var(--panel);border:2px solid var(--edge);box-shadow:8px 8px 0 var(--fire);margin-bottom:28px}
+.yt video{display:block;width:100%;aspect-ratio:16/9;background:#000}
+.yt-meta{padding:14px 16px 16px;border-top:2px solid var(--edge);display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.yt-meta h4{margin:0;font:800 1.9rem/1 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.yt-meta p{margin:0;color:var(--dim);max-width:80ch}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));gap:18px}
+.card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;background:none;border:0;padding:0;cursor:pointer;color:var(--text)}
+.card .thumb{position:relative;display:block;width:100%;aspect-ratio:16/9;border:2px solid var(--wall);background:var(--deep);overflow:hidden}
+.card img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .2s}
+.card:hover img{transform:scale(1.04)}
+.card:hover .thumb,.card:focus-visible .thumb{border-color:var(--edge)}
+.card .dur{position:absolute;right:6px;bottom:6px;font:700 11px/1 var(--mono);font-style:normal;background:#020612e6;color:var(--text);padding:3px 5px}
+.card .playing{display:none;position:absolute;left:6px;top:6px;font:800 .85rem/1 var(--display);font-style:normal;letter-spacing:.06em;text-transform:uppercase;background:var(--fire);color:#fff;padding:3px 6px}
+.card.now .thumb{border-color:var(--fire);box-shadow:4px 4px 0 var(--fire)}
+.card.now .playing{display:block}
+.card b{font:800 1.2rem/1.05 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.card .res{font-size:13px;color:var(--dim)}
+.card .res:empty,.yt-meta p:empty{display:none}
+body.rec .gallery{display:none}
+@media (prefers-reduced-motion:reduce){.card img{transition:none}}
+/* the one card under the player: what happened, in three sentences */
+.about{margin-top:30px;background:var(--panel);border:2px solid var(--edge);border-left:10px solid var(--zone);box-shadow:var(--shadow);padding:16px 20px}
+.about p{margin:0 0 8px;color:var(--dim);max-width:72ch}
+.about p:last-child{margin:0}
+.about #honest-route{color:var(--text);font:800 1.45rem/1.15 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.about a{color:var(--sky);font-weight:600}
+.sect-h{font:800 1.2rem/1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--text);background:var(--wall);padding:9px 12px;border-bottom:2px solid var(--edge)}
+#panel .sect-h{margin:-14px -14px 12px}
+#panel #src{margin:0 0 6px}
+.drive{font:700 .68rem/1.4 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--dim);margin:0 0 4px}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Saira+Extra+Condensed:wght@700;800&family=DM+Sans:wght@400;500;600;700&display=swap">
+
+<header class="marquee"><div class="wrap">
+  <div class="mark" aria-hidden="true"><svg viewBox="0 0 64 64" fill="none" stroke="#86abff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="32" cy="36" rx="15" ry="10" fill="#ee4e18"/><circle cx="26" cy="31" r="2.6" fill="#020612" stroke="none"/><circle cx="38" cy="31" r="2.6" fill="#020612" stroke="none"/><path d="M18 33 9 27M18 39 7 41M20 44 13 52M46 33 55 27M46 39 57 41M44 44 51 52"/><path d="M24 26 18 13M40 26 46 13"/><path d="M14 13a5 5 0 1 0 8 0M42 13a5 5 0 1 0 8 0" fill="#ffc93c"/></svg></div>
+  <h1><span>Crab</span><span>Rescue</span></h1>
+  <div class="tagline"><div class="ticket"><b>Model at the wheel</b><small id="ticket-model">loading the run…</small></div></div>
+</div></header>
+
+<div class="wrap">
+  <section class="intro">
+    <div>
+      <h2>A vision model finds the figurine. The crab carries it&nbsp;out.</h2>
+      <p class="lede">A six-legged Jumper crab robot in a burning room, replayed from one recorded episode.</p>
+    </div>
+    <div id="ribbon"><b>Loading the mission log…</b></div>
+  </section>
+
+  <section class="hall">
+    <div>
+      <div class="tv"><div class="tv-inner">
+        <main id="stage">
+          <canvas id="c"></canvas>
+          <div id="labels"></div>
+          <div id="hud-left">
+            <div id="phase-name"></div>
+            <div class="stats"><span>Time <b id="clock">0.0 s</b></span><span>Fire <b id="fire">0</b></span></div>
+            <div id="last-action"></div>
+          </div>
+          <div id="title-in"><h2>Crab <b>Rescue</b></h2><p>A crab robot finds a human figurine in a burning room and carries it to the safe zone.</p><p id="t-in-sub"></p></div>
+          <div id="title-out"><h2>Figurine <b>rescued</b></h2><p id="t-out-sub"></p><p class="note" id="t-out-note"></p></div>
+          <div id="bar">
+            <button id="play" aria-label="Play / pause">▶</button>
+            <div id="seekwrap"><input id="seek" type="range" min="0" max="1000" value="0" aria-label="Timeline position"><div id="marks"></div></div>
+            <span id="tcur">0.0 / 0.0 s</span>
+            <select id="speed" aria-label="Playback speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="4">4×</option></select>
+            <button data-cam="cinema" class="on">Cinema</button><button data-cam="free">Orbit</button><button data-cam="top">Top</button>
+          </div>
+        </main>
+      </div></div>
+      <div class="chapters" id="chapters" aria-label="Mission chapters"></div>
+      <section class="about">
+        <p id="honest-route">—</p>
+        <p>The model looks at the camera frame and chooses the next move; plain code checks that the move is safe before the crab takes it.</p>
+        <p>This is a simulation: the walking is animated, the grasp is visual and the fire is simulated. It does not show that a real robot is ready for rescue work. Code: <a href="https://github.com/KingKongRobotics/jumper">github.com/KingKongRobotics/jumper</a>.</p>
+      </section>
+    </div>
+
+    <aside class="side">
+      <div class="flyer" id="panel">
+        <div class="sect-h">Result</div>
+        <p class="drive">Driving now</p>
+        <span id="src" class="badge src-none">—</span>
+        <dl class="kv">
+          <dt>Outcome</dt><dd id="kv-outcome">—</dd>
+          <dt>Rescue time</dt><dd id="kv-time">—</dd>
+          <dt>Model calls</dt><dd id="kv-calls">—</dd>
+          <dt>Tokens in / out</dt><dd id="kv-tokens">—</dd>
+          <dt>Cost</dt><dd id="kv-cost">—</dd>
+        </dl>
+        <div class="capsule" id="capsule" hidden>
+          <img id="capsule-img" alt="The camera frame that was sent to the vision model">
+          <div class="cap">What the model saw</div>
+        </div>
+        <button class="btn go" id="replay">Replay the mission</button>
+        <label class="btn alt" for="load">Open your own log</label><input id="load" type="file" accept="application/json,.json" hidden>
+        <div id="loaderr" hidden></div>
+      </div>
+    </aside>
+  </section>
+
+  <section class="gallery" id="gallery" hidden>
+    <h3>Videos</h3>
+    <div class="yt">
+      <video id="watch-player" controls playsinline preload="metadata"></video>
+      <div class="yt-meta"><span id="watch-badge" class="badge">—</span><h4 id="watch-title"></h4><p id="watch-desc"></p></div>
+    </div>
+    <div class="grid" id="gallery-grid"></div>
+  </section>
+</div>
+
+<script type="module" src="app.js"></script>

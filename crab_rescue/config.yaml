@@ -22,27 +22,27 @@ limits:
   fire_margin_m: 0.15
 
 agent:
-  vlm_period_s: 6.0
+  vlm_period_s: 120.0
   replan_period_s: 8.0
   fire_spread_event_cells: 3
   low_confidence: 0.5
 
 caps:                      # hard caps; on cap new calls stop and the last valid plan is kept
-  max_total_usd: 1.0       # TODO(user): set below your Token Factory credit
-  max_tokens_per_call: 2000
-  max_vlm_calls_per_episode: 20
-  max_replans_per_episode: 12
-  max_escalations: 2
-  max_repairs: 2
+  max_total_usd: 0.02      # bounded real-model demo run; stop model calls before this total
+  max_tokens_per_call: 1500
+  max_vlm_calls_per_episode: 1
+  max_replans_per_episode: 8
+  max_escalations: 0
+  max_repairs: 0
 
 # Model ids come ONLY from the endpoint's /v1/models; prices (USD per 1M tokens) only from
 # the console. null = not yet known: real (non-fake) calls refuse to run until filled in.
 models:
-  vlm_primary:         {id: null, price_in: null, price_out: null}   # Cosmos3-Super-Reasoner (candidate)
-  vlm_cheap:           {id: null, price_in: null, price_out: null}   # Nemotron-Nano-V2-12b (candidate)
-  planner:             {id: null, price_in: null, price_out: null}   # Nemotron-3-Super (candidate)
-  planner_fast:        {id: null, price_in: null, price_out: null}   # Nemotron-3.5-Lightning (candidate)
-  planner_escalation:  {id: null, price_in: null, price_out: null}   # Nemotron-3-Ultra (candidate)
+  vlm_primary:         {id: openbmb/MiniCPM-V-4_5, price_in: 0.658, price_out: 1.11}
+  vlm_cheap:           {id: openbmb/MiniCPM-V-4_5, price_in: 0.658, price_out: 1.11}
+  planner:             {id: nvidia/Nemotron-3_5-Lightning, price_in: 0.06, price_out: 0.24}
+  planner_fast:        {id: nvidia/Nemotron-3_5-Lightning, price_in: 0.06, price_out: 0.24}
+  planner_escalation:  {id: nvidia/Nemotron-3-Ultra-550b-a55b, price_in: 1.00, price_out: 3.00}
 
 # Rough token assumptions used by --dry-run only.
 estimates:

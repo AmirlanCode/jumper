@@ -35,12 +35,17 @@ class WaypointFollower:
         wp = self.plan.waypoints[self.idx]  # type: ignore[union-attr]
         x, y, th = pose
         dist = math.hypot(wp.x - x, wp.y - y)
-        tol = self.action_reach if wp.action != "move" else self.reach
+        tol = 0.05 if wp.action == "release" else (
+            self.action_reach if wp.action == "pickup" else self.reach)
         if dist <= tol:
             self.idx += 1
             return (0.0, 0.0, 0.0), (wp.action if wp.action != "move" else None)
         err = _wrap(math.atan2(wp.y - y, wp.x - x) - th)
         wz = max(-self.cmd_max[2], min(self.cmd_max[2], self.k_yaw * err))
+        # Rotate in place before translating through narrow corridors; moving while
+        # still turning cuts corners into walls in the kinematic executor.
+        if abs(err) > 0.3:
+            return (0.0, 0.0, wz), None
         speed = min(wp.speed, self.cmd_max[0], dist / 0.5 + 0.1)
         vx = speed * max(0.0, math.cos(err)) ** 2
         return (vx, 0.0, wz), None

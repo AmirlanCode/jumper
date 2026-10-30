@@ -8,6 +8,10 @@
 
 This repo is Jumper’s AI toolkit for appearance, motion, and scene creation. Open this repo in an AI coding assistant and try the prompts below.
 
+> 🔥 **Crab Rescue (NVIDIA x Nebius hackathon, Physical AI track):** NVIDIA Nemotron-3.5-Super-VL on
+> Nebius Token Factory drives Jumper through a burning room to rescue a figurine, one step at a
+> time. [Read how it works and run it →](crab_rescue/README.md)
+
 > 🦀 **Get a free Jumper!** [Find out how →](https://beunlimited.me/zh/events/crab-robot-challenge-2026)
 
 ## One sentence to design an appearance

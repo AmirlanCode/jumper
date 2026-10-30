@@ -125,6 +125,7 @@ def write_report(out: Path, rows: list[dict[str, Any]], cfg: dict[str, Any], fak
             d.update(replans=mean("replans"), vlm_calls=mean("vlm_calls"), invalid_plans=mean("invalid_plans"),
                      tokens_in=mean("tokens_in"), tokens_out=mean("tokens_out"), cost_usd=mean("cost_usd"),
                      fire_iou=round(float(np.nanmean([x["perception"]["fire_iou"] or np.nan for x in r])), 3))
+            d["cost_usd"] = round(float(np.mean([x["cost_usd"] for x in r])), 6)
         return d
 
     summary = {"methods": {m: agg(m) for m in METHODS}, "episodes": rows, "fake_models": fake,

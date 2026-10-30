@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crab Rescue</title>
+<style>
+:root{--bg:#10120f;--panel:#181b17;--ink:#ece8df;--mute:#a6a396;--line:#2c3029;--fire:#ee4e18;--ok:#58c17a;--bad:#e5645a;--vlm:#6aa9ff;--llm:#e0b44a;--r:12px}
+@media (prefers-color-scheme:light){:root{--bg:#f6f3ec;--panel:#fffdf8;--ink:#1d1f1a;--mute:#6b685d;--line:#ddd8ca}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif}
+header{padding:18px 16px 6px;max-width:1280px;margin:0 auto}
+h1{font-size:26px;margin:0;letter-spacing:-.01em}h1 span{color:var(--fire)}
+.sub{color:var(--mute);margin:2px 0 0;font-size:14px}
+.wrap{max-width:1280px;margin:0 auto;padding:12px 16px 60px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:16px}
+@media(max-width:960px){.wrap{grid-template-columns:1fr}}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.panel h2{font-size:13px;letter-spacing:.07em;text-transform:uppercase;color:var(--mute);margin:0 0 10px}
+canvas{width:100%;height:auto;border-radius:10px;background:#000;display:block}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0}
+label{font-size:13px;color:var(--mute)}
+input,select{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:7px 9px;font:inherit;min-width:0}
+input[type=password],input[type=text]{width:100%}
+select{max-width:100%}
+.btn{background:var(--fire);color:#fff;border:0;border-radius:999px;padding:8px 16px;font:600 14px inherit;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.stat{display:flex;gap:18px;flex-wrap:wrap;font-variant-numeric:tabular-nums;margin-top:10px}
+.stat b{display:block;font-size:20px}.stat span{font-size:12px;color:var(--mute)}
+.banner{border-radius:10px;padding:9px 12px;margin:10px 0;font-size:14px;border:1px solid var(--line)}
+.banner.think{border-color:var(--llm);background:rgba(224,180,74,.1)}
+.banner.good{border-color:var(--ok);background:rgba(88,193,122,.1)}
+.banner.badc{border-color:var(--bad);background:rgba(229,100,90,.1)}
+.pulse{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--llm);margin-right:7px;animation:p 1s infinite}
+@keyframes p{50%{opacity:.25}}
+.log{max-height:620px;overflow:auto;padding-right:4px}
+.card{border:1px solid var(--line);border-radius:10px;padding:9px 11px;margin:0 0 9px;background:var(--bg)}
+.card.rej{opacity:.8}
+.hd{display:flex;gap:7px;align-items:baseline;flex-wrap:wrap;font-size:13px}
+.t{font-weight:700;font-variant-numeric:tabular-nums}
+.tag{font-size:11px;padding:1px 7px;border-radius:999px;background:var(--line)}
+.tag.v{background:var(--vlm);color:#08121f}.tag.l{background:var(--llm);color:#201700}.tag.e{background:var(--fire);color:#fff}
+.chip{font-size:11px;padding:1px 7px;border-radius:999px;border:1px solid var(--line)}
+.chip.ok{border-color:var(--ok);color:var(--ok)}.chip.bad{border-color:var(--bad);color:var(--bad)}
+.card img{width:150px;border-radius:6px;image-rendering:pixelated;border:1px solid var(--line);float:left;margin:7px 10px 4px 0}
+details{margin-top:6px;clear:both}summary{cursor:pointer;color:var(--mute);font-size:12.5px}
+pre{background:rgba(127,127,127,.12);padding:8px;border-radius:8px;overflow:auto;font-size:11.5px;max-height:220px;margin:6px 0 0}
+.mute{color:var(--mute)}.small{font-size:12.5px}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--mute);margin-top:8px}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
+details.adv{margin-top:8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+@media(max-width:560px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Crab <span>Rescue</span></h1>
+  <p class="sub">A room is on fire and a figurine is inside. The crab sees camera frames through a vision model, a language model plans its route, a safety check approves it, and it walks it out.</p>
+</header>
+<div class="wrap">
+  <div>
+    <div class="panel">
+      <h2>Simulation</h2>
+      <canvas id="cv" width="720" height="576"></canvas>
+      <div class="legend">
+        <span><i style="background:#ee4e18"></i>fire</span><span><i style="background:#2470ff"></i>figurine</span>
+        <span><i style="background:#c828be"></i>crab</span><span><i style="background:#28be5a"></i>exit</span>
+        <span><i style="background:transparent;border:2px dashed #3ad1ff"></i>what the AI saw</span>
+        <span><i style="background:#e0b44a"></i>AI route</span>
+      </div>
+      <div id="busy"></div>
+      <div id="result"></div>
+      <div class="stat">
+        <div><b id="sT">0.0</b><span>sim seconds</span></div>
+        <div><b id="sF">0</b><span>fire cells</span></div>
+        <div><b id="sE">0.0</b><span>s in fire</span></div>
+        <div><b id="sC">0</b><span>collisions</span></div>
+        <div><b id="sCalls">0</b><span>model calls</span></div>
+        <div><b id="sTok">0</b><span>tokens</span></div>
+        <div><b id="sCost">-</b><span>cost (USD)</span></div>
+      </div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h2>Run</h2>
+      <div class="row">
+        <label>Who drives</label>
+        <select id="method"><option value="agent">AI agent (sees frames, plans)</option><option value="blind">Blind baseline</option><option value="oracle">Oracle (knows the map)</option></select>
+        <label>Room seed</label><input id="seed" type="number" value="5" min="0" style="width:80px">
+        <label>Speed</label><select id="speed"><option>1</option><option>2</option><option selected>4</option><option>8</option><option>16</option></select>
+      </div>
+      <div class="row">
+        <button class="btn" id="go">Start rescue</button>
+        <button class="btn ghost" id="pause" disabled>Pause</button>
+        <button class="btn ghost" id="stop" disabled>Stop</button>
+      </div>
+      <p class="small mute" style="margin:6px 0 0">The simulation pauses while a model call is in flight. Fire is a simulated hazard grid and the carry is weld-on-contact; the walking is a kinematic stand-in taking the same velocity commands as the trained locomotion policy.</p>
+    </div>
+  </div>
+
+  <div>
+    <div class="panel">
+      <h2>AI models</h2>
+      <div class="row">
+        <label><input type="radio" name="mode" value="offline" checked> Offline stand-in models ($0, no key)</label>
+        <label><input type="radio" name="mode" value="nvidia"> NVIDIA models on Nebius</label>
+      </div>
+      <div id="nv" hidden>
+        <div class="grid2">
+          <div><label>Nebius API key (kept in this app's memory only)</label><input id="key" type="password" autocomplete="off" placeholder="paste key"></div>
+          <div><label>Base URL</label><input id="base" type="text" value="https://api.tokenfactory.us-central1.nebius.com/v1/"></div>
+        </div>
+        <div class="row"><button class="btn ghost" id="load">Load models</button><span id="loadMsg" class="small mute"></span></div>
+        <div class="grid2">
+          <div><label>Vision model (looks at frames)</label><select id="vlm"></select></div>
+          <div><label>Planner model (plans the route)</label><select id="planner"></select></div>
+        </div>
+        <div class="row"><button class="btn ghost" id="test" disabled>Test the two models (tiny, ~$0.00)</button><span id="testMsg" class="small mute"></span></div>
+        <details class="adv"><summary>Advanced: extra roles, prices, limits</summary>
+          <div class="grid2" style="margin-top:8px">
+            <div><label>Cheap vision model (routine frames)</label><select id="vlm_cheap"></select></div>
+            <div><label>Fast planner (fire close)</label><select id="planner_fast"></select></div>
+            <div><label>Escalation planner (after a bad plan)</label><select id="planner_escalation"></select></div>
+            <div><label>Max tokens per call</label><input id="max_tokens" type="number" value="1800"></div>
+            <div><label>Fallback input price, USD per 1M tokens (custom models only)</label><input id="price_in" type="text" placeholder="blank = cost unknown"></div>
+            <div><label>Fallback output price, USD per 1M tokens</label><input id="price_out" type="text" placeholder="blank = cost unknown"></div>
+            <div><label>Max vision calls per run</label><input id="max_vlm" type="number" value="20"></div>
+            <div><label>Max plans per run</label><input id="max_plans" type="number" value="12"></div>
+          </div>
+          <p id="priceHint" class="small mute">Known model prices are filled from the Token Factory catalog. For a different model, enter its current rate above; without a known price only call-count caps apply.</p>
+        </details>
+      </div>
+      <div id="setupMsg"></div>
+    </div>
+    <div class="panel" style="margin-top:16px">
+      <h2>What the AI sees and decides</h2>
+      <div class="log" id="log"><p class="mute small">Nothing yet. Start a run with "AI agent" selected.</p></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const fmt = (v,d=1) => v==null ? '-' : (typeof v==='number' ? (Number.isInteger(v)?v:v.toFixed(d)) : v);
+const post = async (url, body) => { const r = await fetch(url,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})}); const j = await r.json(); if(!r.ok) throw new Error(j.error||r.status); return j; };
+
+// ---------- setup ----------
+const mode = () => document.querySelector('input[name=mode]:checked').value;
+document.querySelectorAll('input[name=mode]').forEach(r => r.onchange = () => { $('nv').hidden = mode()!=='nvidia'; });
+let models = [], hints = {vision:[],text:[]};
+const knownPrices = {
+  'openbmb/MiniCPM-V-4_5':[0.658,1.11],
+  'nvidia/nemotron-3-super-120b-a12b':[0.30,0.90],
+  'nvidia/Nemotron-3_5-Lightning':[0.06,0.24],
+  'nvidia/Nemotron-3-Ultra-550b-a55b':[1.00,3.00],
+  'nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B':[0.06,0.24]
+};
+const preferred = {vlm:'openbmb/MiniCPM-V-4_5',planner:'nvidia/Nemotron-3_5-Lightning',
+  planner_fast:'nvidia/Nemotron-3_5-Lightning',planner_escalation:'nvidia/Nemotron-3-Ultra-550b-a55b'};
+function updatePriceHint(){
+  const ids = {vlm:$('vlm').value,vlm_cheap:$('vlm_cheap').value||$('vlm').value,
+    planner:$('planner').value,planner_fast:$('planner_fast').value||$('planner').value,
+    planner_escalation:$('planner_escalation').value||$('planner').value};
+  $('priceHint').textContent = Object.entries(ids).map(([role,id])=>{
+    const p=knownPrices[id]; return `${role}: ${id||'—'} ${p?`$${p[0]} / $${p[1]} per 1M`:'(custom price needed)'}`;
+  }).join(' · ');
+}
+function fillSelect(id, withSame){
+  const sel = $(id); sel.innerHTML = '';
+  if(withSame){ sel.add(new Option('same as above','')); }
+  const vis = id.startsWith('vlm'); const first = (vis?hints.vision:hints.text);
+  const order = [...first, ...models.filter(m=>!first.includes(m))];
+  order.forEach(m => sel.add(new Option(m, m)));
+  if(preferred[id] && models.includes(preferred[id])) sel.value = preferred[id];
+  sel.onchange = updatePriceHint;
+}
+$('load').onclick = async () => {
+  $('loadMsg').textContent = 'loading...';
+  try {
+    const j = await post('/api/connect', {key: $('key').value, base: $('base').value});
+    $('key').value = ''; models = j.ids; hints = j.hints;
+    ['vlm','planner'].forEach(i=>fillSelect(i,false)); ['vlm_cheap','planner_fast','planner_escalation'].forEach(i=>fillSelect(i,true));
+    updatePriceHint();
+    $('loadMsg').textContent = `${models.length} models loaded. Key is now held by the app (not shown again).`; $('test').disabled = false;
+  } catch(e){ $('loadMsg').textContent = 'failed: ' + e.message; }
+};
+$('test').onclick = async () => {
+  $('testMsg').textContent = 'testing...';
+  try {
+    const v = await post('/api/probe',{role:'vlm_primary',model:$('vlm').value});
+    const p = await post('/api/probe',{role:'planner',model:$('planner').value});
+    const ok = (x)=> x && x.ok ? (x.correct?'works':'answered, but not as expected') : 'failed';
+    $('testMsg').innerHTML = `vision text: ${ok(v.text)}, vision image: <b>${ok(v.image)}</b> (${fmt(v.image&&v.image.latency_s)} s); planner text: ${ok(p.text)}.` +
+      ((v.image&&!v.image.ok)?` <span style="color:var(--bad)">${esc(v.image.error)}</span>`:'');
+  } catch(e){ $('testMsg').textContent = 'failed: ' + e.message; }
+};
+
+// ---------- run control ----------
+let idx = {p:0,l:0,e:0}, trail = [], lastPer = null, lastPlan = null, S = null, timer = null;
+$('go').onclick = async () => {
+  $('setupMsg').innerHTML = '';
+  const body = {seed: +$('seed').value, method: $('method').value, mode: mode(), speed: +$('speed').value,
+    vlm: $('vlm').value, planner: $('planner').value, vlm_cheap: $('vlm_cheap').value, planner_fast: $('planner_fast').value,
+    planner_escalation: $('planner_escalation').value, max_tokens: +$('max_tokens').value,
+    price_in: $('price_in').value, price_out: $('price_out').value, max_vlm_calls_per_episode: +$('max_vlm').value, max_replans_per_episode: +$('max_plans').value};
+  try { await post('/api/start', body); } catch(e){ $('setupMsg').innerHTML = `<div class="banner badc">${esc(e.message)}</div>`; return; }
+  idx = {p:0,l:0,e:0}; trail = []; lastPer = null; lastPlan = null; $('log').innerHTML = ''; $('result').innerHTML = '';
+  if(!timer) timer = setInterval(poll, 120);
+};
+$('pause').onclick = async () => { const j = await post('/api/pause'); $('pause').textContent = j.paused ? 'Resume' : 'Pause'; };
+$('stop').onclick = async () => { await post('/api/stop'); };
+$('speed').onchange = () => post('/api/speed',{speed:+$('speed').value});
+
+// ---------- polling ----------
+async function poll(){
+  let j; try { j = await (await fetch(`/api/state?p=${idx.p}&l=${idx.l}&e=${idx.e}`)).json(); } catch(e){ return; }
+  S = j; idx = j.n; render(j);
+}
+function render(j){
+  const running = j.status==='running';
+  $('go').disabled = running; $('pause').disabled = !running; $('stop').disabled = !running;
+  if(!running) $('pause').textContent = 'Pause';
+  if(j.snap){ const s=j.snap; $('sT').textContent=s.t.toFixed(1); $('sF').textContent=s.fire.length; $('sE').textContent=s.exposure; $('sC').textContent=s.collisions;
+    if(!trail.length || Math.hypot(trail[trail.length-1][0]-s.pose[0],trail[trail.length-1][1]-s.pose[1])>0.05) trail.push([s.pose[0],s.pose[1]]); }
+  if(j.budget){ $('sCalls').textContent=j.budget.calls; $('sTok').textContent=(j.budget.tokens_in+j.budget.tokens_out).toLocaleString();
+    $('sCost').textContent = j.budget.priced ? '$'+j.budget.cost_usd.toFixed(4) : 'unknown'; }
+  $('busy').innerHTML = j.busy ? `<div class="banner think"><span class="pulse"></span><b>${esc(j.busy.kind)}</b> with <b>${esc(j.busy.model)}</b> (${esc(j.busy.role)}) - ${j.busy.waited_s}s. The world is paused while it thinks.</div>` : '';
+  if(j.status==='error') $('result').innerHTML = `<div class="banner badc"><b>Error:</b> ${esc(j.error)}</div>`;
+  if(j.status==='done' && j.snap){ const ok = j.snap.outcome==='rescued'; $('result').innerHTML = `<div class="banner ${ok?'good':'badc'}"><b>${ok?'Rescued':esc(j.snap.outcome.replace(/_/g,' '))}</b> at ${j.snap.t.toFixed(1)} s - judged by the simulator, not by the model.${j.metrics&&j.metrics.perception?` Fire map IoU ${fmt(j.metrics.perception.fire_iou,2)}, rejected plans ${j.metrics.invalid_plans}.`:''}</div>`; }
+  const log = $('log');
+  const add = html => { const d=document.createElement('div'); d.innerHTML=html; log.appendChild(d.firstElementChild); log.scrollTop = log.scrollHeight; };
+  j.perceptions.forEach(p => {
+    if(p.valid) lastPer = p.parsed;
+    const q = p.parsed; const sum = q ? `figurine ${q.figurine?'seen':'not seen'}, exit ${q.exit?'seen':'not seen'}, ${q.fire.length} fire region(s), confidence ${fmt(q.confidence,2)}` : esc(p.error||'invalid reply');
+    add(`<div class="card ${p.valid?'':'rej'}"><div class="hd"><span class="t">${fmt(p.t)} s</span><span class="tag v">VISION</span><b>${esc(p.role)}</b><span class="mute">${esc(p.model)}</span><span class="mute">${fmt(p.latency_s)} s${p.tokens_in!=null?`, ${p.tokens_in}+${p.tokens_out} tok`:''}</span><span class="chip ${p.valid?'ok':'bad'}">${p.valid?'valid JSON':'invalid'}</span></div>${p.png?`<img src="data:image/png;base64,${p.png}" alt="frame">`:''}<div style="margin-top:6px">${sum}</div>${p.error&&!q?`<div class="mute small">${esc(p.error)}</div>`:''}<details><summary>raw reply</summary><pre>${esc(p.raw||'')}</pre></details></div>`);
+  });
+  j.plans.forEach(p => {
+    if(p.accepted && p.plan) lastPlan = p.plan;
+    const pl = p.plan;
+    add(`<div class="card ${p.accepted?'':'rej'}"><div class="hd"><span class="t">${fmt(p.t)} s</span><span class="tag l">PLAN</span><b>${esc(p.role)}</b><span class="mute">${esc(p.model)} - ${esc(p.reason)}</span><span class="mute">${fmt(p.latency_s)} s${p.tokens_in!=null?`, ${p.tokens_in}+${p.tokens_out} tok`:''}</span><span class="chip ${p.accepted?'ok':'bad'}">${p.accepted?'approved':'rejected by '+esc(p.rejected_by)}</span></div>${pl?`<div style="margin-top:6px">${esc(pl.rationale)} <span class="mute">(${pl.waypoints.length} waypoints)</span></div>`:''}${p.reasons?`<div style="margin-top:6px;color:var(--bad)" class="small">${p.reasons.map(esc).join('<br>')}</div>`:''}<details><summary>raw reply</summary><pre>${esc(p.raw||'')}</pre></details></div>`);
+  });
+  const lab = {fire_spread:'Fire spread detected',path_blocked:'Fire blocks the current route',pickup:'Pickup attempt',release:'Released at the exit',plan_blocked:'Planning stopped by a cap',vlm_blocked:'Vision stopped by a cap',plan_failed:'No valid plan - keeping the last one',stuck:'Robot stuck',vlm_error:'Vision call failed',plan_error:'Planner call failed',episode_end:'Episode ended'};
+  j.events.forEach(e => { if(['plan_skipped','plan_accepted'].includes(e.type)) return;
+    const extra = e.type==='pickup' ? (e.ok?' - got it':' - missed, retrying') : (e.error?` - ${esc(e.error)}`:'');
+    add(`<div class="card"><div class="hd"><span class="t">${fmt(e.t)} s</span><span class="tag e">EVENT</span><b>${esc(lab[e.type]||e.type)}${extra}</b></div></div>`); });
+}
+
+// ---------- drawing ----------
+const cv = $('cv'), ctx = cv.getContext('2d');
+function draw(){
+  requestAnimationFrame(draw);
+  const st = S && S.static; ctx.fillStyle = '#000'; ctx.fillRect(0,0,cv.width,cv.height);
+  if(!st){ ctx.fillStyle='#a6a396'; ctx.font='16px system-ui'; ctx.textAlign='center'; ctx.fillText('Press "Start rescue"', cv.width/2, cv.height/2); return; }
+  const c = st.cell;
+  const cs = cv.width / st.w; const m = cs / c; // px per metre
+  const fire = new Set(); (S.snap?S.snap.fire:[]).forEach(f => fire.add(f[0]+','+f[1]));
+  for(let y=0;y<st.h;y++) for(let x=0;x<st.w;x++){
+    const g = st.grid[y][x]; let col = '#e8e4d8';
+    if(g===1) col='#343642'; else if(g===2) col='#7e5430'; else if(g===3) col='#28be5a';
+    else if(fire.has(x+','+y)) col = (Math.random()<0.12)?'#ff7a2e':'#ee4e18';
+    else { let sm=false; for(const f of fire){ const [fx,fy]=f.split(',').map(Number); if(Math.abs(fx-x)<=2&&Math.abs(fy-y)<=2){sm=true;break;} } if(sm) col='#bab8b6'; }
+    ctx.fillStyle = col; ctx.fillRect(x*cs, y*cs, cs, cs);
+  }
+  // what the AI saw
+  if(lastPer){ ctx.save(); ctx.strokeStyle='#3ad1ff'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+    lastPer.fire.forEach(b => ctx.strokeRect(b.x0*cv.width, b.y0*cv.height, (b.x1-b.x0)*cv.width, (b.y1-b.y0)*cv.height));
+    if(lastPer.figurine){ ctx.beginPath(); ctx.arc(lastPer.figurine.x*cv.width, lastPer.figurine.y*cv.height, cs*0.55, 0, 7); ctx.stroke(); }
+    ctx.restore(); }
+  // AI route
+  if(lastPlan && S.snap){ ctx.save(); ctx.strokeStyle='#e0b44a'; ctx.lineWidth=3; ctx.beginPath(); ctx.moveTo(S.snap.pose[0]*m, S.snap.pose[1]*m);
+    lastPlan.waypoints.forEach(w => ctx.lineTo(w.x*m, w.y*m)); ctx.stroke();
+    lastPlan.waypoints.forEach((w,i)=>{ ctx.fillStyle = w.action==='move'?'#e0b44a':(w.action==='pickup'?'#2470ff':'#28be5a'); ctx.beginPath(); ctx.arc(w.x*m,w.y*m,5,0,7); ctx.fill(); });
+    ctx.restore(); }
+  if(trail.length>1){ ctx.strokeStyle='rgba(120,20,110,.7)'; ctx.lineWidth=2; ctx.beginPath(); trail.forEach((p,i)=> i?ctx.lineTo(p[0]*m,p[1]*m):ctx.moveTo(p[0]*m,p[1]*m)); ctx.stroke(); }
+  if(S.snap){ const s=S.snap;
+    ctx.fillStyle='#2470ff'; ctx.beginPath(); ctx.arc(s.fig[0]*m, s.fig[1]*m, cs*0.32, 0, 7); ctx.fill();
+    const [x,y,th]=s.pose, r=cs*0.45; ctx.fillStyle='#c828be'; ctx.beginPath();
+    ctx.moveTo(x*m+r*Math.cos(th), y*m+r*Math.sin(th)); ctx.lineTo(x*m+r*Math.cos(th+2.5), y*m+r*Math.sin(th+2.5)); ctx.lineTo(x*m+r*Math.cos(th-2.5), y*m+r*Math.sin(th-2.5)); ctx.fill();
+  }
+}
+draw();
+fetch('/api/info').then(r=>r.json()).then(i=>{ if(i.connected){ document.querySelector('input[value=nvidia]').click(); $('loadMsg').textContent='already connected: press Load models to refresh'; } });
+setInterval(()=>{ if(!timer) poll(); }, 1500);
+</script>
+</body>
+</html>
